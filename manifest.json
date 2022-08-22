@@ -1,0 +1,21 @@
+{
+  "name": "Filter LinkedIn Job Search",
+  "description": "An extension for filtering listings from LinkedIn's job-searching page",
+  "version": "1.0",
+
+  "permissions": ["storage"],
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": false
+  },
+
+  "content_scripts": [{
+    "matches": ["https://www.linkedin.com/jobs/search/*"],
+    "js": ["script.js"],
+    "run_at": "document_start"
+  }],
+  
+  "author": "Eve Aviv Keinan",
+
+  "manifest_version": 3
+}
