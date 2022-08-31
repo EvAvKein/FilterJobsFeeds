@@ -45,7 +45,7 @@ function setup() {
 
 const initOnceReady = new MutationObserver(() => {
   if (document.querySelector(selectors.jobsList)) {
-    pageReadyObserver.disconnect();
+    initOnceReady.disconnect();
     setup();
     filterNewListings();
   };
