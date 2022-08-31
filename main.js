@@ -1,7 +1,10 @@
 let filteredString;
 chrome.storage.sync.get(["blacklisted"], (current) => filteredString = current.blacklisted);
 
-const waitForColdVisit = 2500; // very arbitrary, based on rough testing with a particular device on a particular internet connection
+const selectors = {
+  jobsList: ".scaffold-layout__list-container",
+  jobItem: ".job-card-container",
+};
 
 const containerElem = document.createElement("aside");
 const counterElem = document.createElement("h6");
@@ -16,7 +19,7 @@ function updateCounterElem(newCount) {
 
 let filterCount = 0;
 function filterNewListings() {
-  const allListings = Array.from(document.querySelectorAll(".job-card-container"));
+  const allListings = Array.from(document.querySelectorAll(selectors.jobItem));
 
   const matchingListings = allListings.filter((listing) => {
     return listing.textContent.includes(filteredString);
@@ -35,12 +38,19 @@ function setup() {
 
   const filterOnMutation = new MutationObserver(filterNewListings);
   filterOnMutation.observe(
-    document.querySelector(".scaffold-layout__list-container"),
+    document.querySelector(selectors.jobsList),
     {childList: true, subtree: true}
   );
 };
 
-setTimeout(() => {
-  setup()
-  filterNewListings();
-}, waitForColdVisit);
+const initOnceReady = new MutationObserver(() => {
+  if (document.querySelector(selectors.jobsList)) {
+    pageReadyObserver.disconnect();
+    setup();
+    filterNewListings();
+  };
+});
+initOnceReady.observe(
+  document.body,
+  {childList: true, subtree: true}
+);
