@@ -1,0 +1,25 @@
+#EAK_JobsFilter {
+  position: fixed;
+  z-index: 99999;
+  bottom: 0;
+  left: 0;
+  background-color:navy;
+  padding: 0.5em;
+  padding-right: 0.75em;
+  border-top-right-radius: 0.5em;
+}
+
+#EAK_JobsFilter h6,
+#EAK_JobsFilter p {
+  margin: 0;
+}
+
+#EAK_JobsFilter h6 {
+  color:white;
+  font-size: 1em;
+}
+
+#EAK_JobsFilter p {
+  color:gainsboro;
+  font-size: 0.8em;
+}
