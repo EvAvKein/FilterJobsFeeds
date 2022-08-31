@@ -1,7 +1,7 @@
 {
   "name": "Filter LinkedIn Job Search",
   "description": "An extension for filtering listings from LinkedIn's job-searching page",
-  "version": "1.3",
+  "version": "1.4",
 
   "permissions": ["storage"],
   "options_ui": {

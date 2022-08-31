@@ -1,0 +1,4 @@
+li {font-size: 1.2em}
+li + li {margin-top: 0.25em}
+
+button {margin-left: 0.5em}
