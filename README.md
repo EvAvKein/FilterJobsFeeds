@@ -1,8 +1,11 @@
-# Filter LinkedIn Jobs
+# Filter Jobs Feeds
 
-An extension I created for personal use, due to frustration with a particular company's sheer volume of improperly-tagged automated posts to the LinkedIn jobs feed (occupying more than 70% of every page of my feed with shocking consistency).  
+A Chrome extension for blacklisting text to filter your jobs feeds, currently compatible with LinkedIn and AngelList
 
-This extension became my last resort after my attempts to resolve this spam issue (for more than just myself) fell on deaf/inattentive ears, both at that company's proprietary support and at LinkedIn's support. There's unfortunately no built-in way (as of writing this) to block/hide particular accounts on LinkedIn and/or the jobs feed.
+<details>
+  <summary>Why'd you create this?</summary>
+  I originally created it strictly for personal use, out of frustration with a particular company's overwhelming improperly-tagged sponsored spam to the LinkedIn jobs feed (which occupied +70% of every page of my feed with shocking consistency)... and after my attempts to resolve the issue (for more than just myself) fell on deaf/inattentive ears both at that company's proprietary support and LinkedIn's support.
+</details>
 
 ---
 
