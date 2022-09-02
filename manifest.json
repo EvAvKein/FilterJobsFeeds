@@ -1,7 +1,7 @@
 {
   "name": "Filter LinkedIn Job Search",
   "description": "An extension for filtering listings from LinkedIn's job-searching page",
-  "version": "1.4",
+  "version": "1.5",
 
   "permissions": ["storage"],
   "options_ui": {
@@ -10,7 +10,7 @@
   },
 
   "content_scripts": [{
-    "matches": ["https://www.linkedin.com/jobs/search/*"],
+    "matches": ["https://www.linkedin.com/jobs/search/*", "https://angel.co/jobs"],
     "js": ["main.js"],
     "css": ["main.css"]
   }],

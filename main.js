@@ -1,9 +1,32 @@
 let filterCount = 0;
 let filteredStrings = [];
+let selectors;
 
-const selectors = {
-  jobsList: ".scaffold-layout__list-container",
-  jobItem: ".job-card-container",
+class SiteData {
+  constructor(siteName, jobsListSelector, jobsItemSelector) {
+    this.name = siteName;
+    this.jobsList = jobsListSelector;
+    this.jobItem = jobsItemSelector;
+  };
+};
+const compatibleSites = [
+  new SiteData("linkedin", ".scaffold-layout__list-container", ".job-card-container"),
+  new SiteData("angel.co", '[data-test="JobSearchResults"]', '[data-test="StartupResult"]'),
+];
+
+for (const siteData of compatibleSites) {
+  if (document.URL.match(siteData.name)) {
+    selectors = siteData;
+    break;
+  };
+};
+
+function stringsArrayToList(array) {
+  let sentence = "";
+  for (const [index, item] of array.entries()) { // initially wanted to use Array.reduce(), because this is a (rare) perfect case for it, but it's just not readable enough
+    sentence += (index ? ", " + item : item);
+  };
+  return sentence;
 };
 
 const containerElem = document.createElement("aside");
@@ -46,12 +69,8 @@ function filterNewListings() {
 
 function setup() {
   updateCounterElem(0);
-
-  let filtersAsString = "";
-  for (const [index, filter] of filteredStrings.entries()) { // initially wanted to use Array.reduce(), because this is a (rare) perfect case for it, but it's just not readable enough
-    filtersAsString += (index ? ", " + filter : filter);
-  };
-
+  
+  const filtersAsString = stringsArrayToList(filteredStrings);
   filtersElem.innerText = "Filtering: " + filtersAsString;
   document.body.appendChild(containerElem);
 
@@ -62,18 +81,23 @@ function setup() {
   );
 };
 
-getFilters().then((filters) => {
-  filteredStrings = filters;
-
-  const initOnceReady = new MutationObserver(() => {
-    if (document.querySelector(selectors.jobsList)) {
-      initOnceReady.disconnect();
-      setup();
-      filterNewListings();
-    };
+if (selectors) {
+  getFilters().then((filters) => {
+    filteredStrings = filters;
+  
+    const initOnceReady = new MutationObserver(() => {
+      if (document.querySelector(selectors.jobsList)) {
+        initOnceReady.disconnect();
+        setup();
+        filterNewListings();
+      };
+    });
+    initOnceReady.observe(
+      document.body,
+      {childList: true, subtree: true}
+    );
   });
-  initOnceReady.observe(
-    document.body,
-    {childList: true, subtree: true}
-  );
-});
+} else {
+  const compatibleSiteNames = compatibleSites.map((site) => site.name);
+  console.error(`Couldn't find site specs for ${document.URL}, this extension only supports the following sites: ${stringsArrayToList(compatibleSiteNames)}`);
+};
