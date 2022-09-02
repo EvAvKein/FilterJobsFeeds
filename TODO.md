@@ -1,0 +1,5 @@
+- Enable js module usage for settings.js & main.js
+  - Modularize getFilters (used in both scripts)
+  - Modularize SiteData and the defaults (currently just used in main.js, would be helpful for saving & presenting custom sites via settings.js)
+- Add feature for saving custom sites
+- Style the settings page
