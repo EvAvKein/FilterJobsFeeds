@@ -2,7 +2,7 @@
   "name": "Filter Jobs Feeds",
   "description": "An extension for filtering jobs listings from select sites' jobs feeds",
   "icons": {"128": "filterJobsFeeds.png"},
-  "version": "1.6",
+  "version": "1.0.0",
 
   "permissions": ["storage"],
   "options_ui": {
