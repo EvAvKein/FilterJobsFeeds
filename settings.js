@@ -33,6 +33,16 @@ function newFilterListItem(filterText) {
   elems.filtersList.appendChild(filterElem);
 };
 
+function saveFilter() {
+  const newFilter = elems.textInput.value;
+  const filteredAfterAddition = [...filtered, newFilter];
+  
+  chrome.storage.sync.set({filtered: filteredAfterAddition});
+  filtered = filteredAfterAddition;
+  newFilterListItem(newFilter);
+  elems.textInput.value = "";
+};
+
 getFilters().then((filteredStrings) => {
   if (!filteredStrings) chrome.storage.sync.set({filtered: []});
   filtered = filteredStrings ?? [];
@@ -41,13 +51,9 @@ getFilters().then((filteredStrings) => {
     newFilterListItem(filterText);
   });
   
-  elems.saveButton.addEventListener("click", () => {
-    const newFilter = elems.textInput.value;
-    const filteredAfterAddition = [...filtered, newFilter];
-    
-    chrome.storage.sync.set({filtered: filteredAfterAddition});
-    filtered = filteredAfterAddition;
-    newFilterListItem(newFilter);
-    elems.textInput.value = "";
+  elems.saveButton.addEventListener("click", saveFilter);
+  
+  elems.textInput.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") saveFilter();
   });
 });

@@ -1,4 +1,10 @@
-html {min-width: 15.25em}
+html {
+  width: max-content;
+  max-width: 30em;
+}
+
+#filterAddition {display: flex}
+#filterAddition input {flex-grow: 1}
 
 li {font-size: 1.2em}
 li + li {margin-top: 0.25em}
