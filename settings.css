@@ -1,3 +1,5 @@
+html {min-width: 15.25em}
+
 li {font-size: 1.2em}
 li + li {margin-top: 0.25em}
 

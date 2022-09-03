@@ -8,6 +8,9 @@
     "page": "settings.html",
     "open_in_tab": false
   },
+  "action": {
+    "default_popup": "settings.html"
+  },
 
   "content_scripts": [{
     "matches": ["https://www.linkedin.com/jobs/search/*", "https://angel.co/jobs"],
