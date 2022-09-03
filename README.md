@@ -11,9 +11,9 @@ A Chrome extension for blacklisting text to filter your jobs feeds, currently co
 
 ## Contributing
 
-I made this for personal use, and have 0 interest in maintaining it beyond that.  
+Feel free to open an issue regarding any contribution (or anything else) you have in mind!
 
-If you want to contribute towards this extension in any way at all, you're more than welcome to clone/fork/adopt it.
+For stuff in TODO.md, you have the go-ahead to submit a pull request without the issue (unless you wanna ask something first of course)
 
 ---
 
