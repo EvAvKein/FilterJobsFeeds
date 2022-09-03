@@ -1,6 +1,6 @@
 # Filter Jobs Feeds
 
-A Chrome extension for blacklisting text to filter your jobs feeds, currently compatible with LinkedIn and AngelList
+A Chrome extension for filtering jobs feeds by blacklisting text, currently compatible with LinkedIn and AngelList
 
 <details>
   <summary>Why'd you create this?</summary>
