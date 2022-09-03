@@ -1,7 +1,3 @@
-let filterCount = 0;
-let filteredStrings = [];
-let selectors;
-
 class SiteData {
   constructor(siteName, jobsListSelector, jobsItemSelector) {
     this.name = siteName;
@@ -14,11 +10,15 @@ const compatibleSites = [
   new SiteData("angel.co", '[data-test="JobSearchResults"]', '[data-test="StartupResult"]'),
 ];
 
-for (const siteData of compatibleSites) {
-  if (document.URL.match(siteData.name)) {
-    selectors = siteData;
-    break;
+function findSiteData() {
+  let data;
+  for (const siteData of compatibleSites) {
+    if (document.URL.match(siteData.name)) {
+      data = siteData;
+      break;
+    };
   };
+  return data;
 };
 
 function stringsArrayToList(array) {
@@ -29,67 +29,67 @@ function stringsArrayToList(array) {
   return sentence;
 };
 
-const containerElem = document.createElement("aside");
-const counterElem = document.createElement("h6");
-const filtersElem = document.createElement("p");
-containerElem.id = "EAK_JobsFilter";
-containerElem.appendChild(counterElem);
-containerElem.appendChild(filtersElem);
-
-function updateCounterElem(newCount) {
-  counterElem.innerText = "Total jobs filtered: " + newCount;
-};
-
-async function getFilters() { // copy-pasted from settings.js, because using modules in chrome extensions requires some very wacky code. also, see that file for context about this function
+async function getFilters() {
+  // function is copy-pasted from settings.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
+  // also, see that file for context about the function
   return new Promise((resolve) => {
     chrome.storage.sync.get(["filtered"], (storage) => resolve(storage.filtered));
   });
 };
 
-function filterNewListings() {
-  const allListings = Array.from(document.querySelectorAll(selectors.jobItem));
+function filterListings(listingSelector, filteredStrings) {
+  const allListings = Array.from(document.querySelectorAll(listingSelector));
 
-  const matchingListings = allListings.filter((listing) => {
-    let matchesAnyFilter;
+  let filteredCount = 0;
+  allListings.forEach((listingElem) => {
+    const matchesAnyFilter = filteredStrings.some((filter) => listingElem.textContent.includes(filter));
 
-    filteredStrings.forEach((string) => {
-      if (listing.textContent.includes(string)) {
-        matchesAnyFilter = true;
-      };
-    });
-
-    return matchesAnyFilter;
+    if (matchesAnyFilter) {
+      listingElem.remove();
+      filteredCount++;
+    };
   });
-  
-  matchingListings.forEach((matchingListing) => {
-    matchingListing.remove();
-    updateCounterElem(filterCount++);
-  });
+  return filteredCount;
 };
 
-function setup() {
-  updateCounterElem(0);
-  
-  const filtersAsString = stringsArrayToList(filteredStrings);
-  filtersElem.innerText = "Filtering: " + filtersAsString;
+function initialize() {
+  const containerElem = document.createElement("aside");
+  const titleElem = document.createElement("h6");
+  const descriptionElem = document.createElement("p");
+  containerElem.id = "EAK_JobsFilter";
+  containerElem.appendChild(titleElem);
+  containerElem.appendChild(descriptionElem);
   document.body.appendChild(containerElem);
 
-  const filterOnMutation = new MutationObserver(filterNewListings);
-  filterOnMutation.observe(
-    document.querySelector(selectors.jobsList),
-    {childList: true, subtree: true}
-  );
-};
+  const selectors = findSiteData();
+  if (!selectors) {
+    titleElem.innerText = "Error: Failed to load the specs for site";
+    descriptionElem.innerText = "Please report this error at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (and include this page's URL)";
+    return;
+  };
 
-if (selectors) {
   getFilters().then((filters) => {
-    filteredStrings = filters;
+    if (!filters?.length) {
+      titleElem.innerText = "No filters added!";
+      descriptionElem.innerText = "Edit your filters in the extension settings";
+      return;
+    };
+    descriptionElem.innerText = "Filtering: " + stringsArrayToList(filters);
   
+    let totalFiltered = 0;
     const initOnceReady = new MutationObserver(() => {
       if (document.querySelector(selectors.jobsList)) {
         initOnceReady.disconnect();
-        setup();
-        filterNewListings();
+        
+
+        const filterOnMutation = new MutationObserver(() => {
+          totalFiltered += filterListings(selectors.jobItem, filters);
+          titleElem.innerText = "Total jobs filtered: " + totalFiltered;
+        });
+        filterOnMutation.observe(
+          document.querySelector(selectors.jobsList),
+          {childList: true, subtree: true}
+        );
       };
     });
     initOnceReady.observe(
@@ -97,7 +97,5 @@ if (selectors) {
       {childList: true, subtree: true}
     );
   });
-} else {
-  const compatibleSiteNames = compatibleSites.map((site) => site.name);
-  console.error(`Couldn't find site specs for ${document.URL}, this extension only supports the following sites: ${stringsArrayToList(compatibleSiteNames)}`);
 };
+initialize();
