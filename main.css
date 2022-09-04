@@ -3,23 +3,37 @@
   z-index: 99999;
   bottom: 0;
   left: 0;
+  color:gainsboro;
   background-color:navy;
+  max-width: 35em;
   padding: 0.5em;
   padding-right: 0.75em;
   border-top-right-radius: 0.5em;
 }
 
-#EAK_JobsFilter h6,
-#EAK_JobsFilter p {
+#EAK_JobsFilter h5,
+#EAK_JobsFilter p,
+#EAK_toggleSection h6 {
   margin: 0;
 }
-
-#EAK_JobsFilter h6 {
+#EAK_JobsFilter h5,
+#EAK_toggleSection h6 {
   color:white;
   font-size: 1em;
 }
 
-#EAK_JobsFilter p {
-  color:gainsboro;
-  font-size: 0.8em;
+#EAK_JobsFilter p {font-size: 0.8em}
+
+#EAK_toggleSection hr {
+  margin: 0.5em 0;
+  padding: 0.1em;
+  background-color:dodgerblue;
+}
+
+#EAK_toggleSection p {font-size: 0.9em}
+#EAK_toggleSection button {
+  cursor: pointer;
+  display: block;
+  margin-top: 0.5em;
+  padding: 0.3em 0.6em;
 }

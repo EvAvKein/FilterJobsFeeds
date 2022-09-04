@@ -1,2 +1,3 @@
 - Add feature for saving custom sites
+- Eliminate the need for manual activations
 - Style the settings page
