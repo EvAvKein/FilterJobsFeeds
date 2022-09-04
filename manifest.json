@@ -2,7 +2,7 @@
   "name": "Filter Jobs Feeds",
   "description": "A Chrome extension for filtering jobs feeds by blacklisting text",
   "icons": {"128": "filterJobsFeeds.png"},
-  "version": "1.1.1",
+  "version": "1.1.2",
 
   "permissions": ["storage"],
   "options_ui": {
