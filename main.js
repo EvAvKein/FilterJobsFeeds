@@ -106,7 +106,7 @@ function initialize() {
         toggleSectionElem.innerHTML = `
           <hr>
           <h6> Activate once you're ready to browse! </h6>
-          <p> Manual activation is required due to conflicts with search/sort functionalities,\n so first make sure you're done editing those! </p>
+          <p> Manual activation is required due to conflicts with search/sort functionalities,<br> so first make sure you're done editing those! </p>
         `; // dont need references to any of these, so there's no reason to not use innerHTML. halves the complexity & lines of code
 
         const toggleButtonElem = document.createElement("button");
