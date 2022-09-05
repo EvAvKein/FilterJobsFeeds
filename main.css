@@ -1,15 +1,18 @@
+/* some declarations here might seem redundant, but they exist to override style sheets of particular pages */
+
 #EAK_JobsFilter {
   position: fixed;
   z-index: 99999;
   bottom: 0;
   left: 0;
-  color:gainsboro;
   background-color:navy;
   max-width: 35em;
   padding: 0.5em;
   padding-right: 0.75em;
   border-top-right-radius: 0.5em;
 }
+
+#EAK_JobsFilter * {color:gainsboro}
 
 #EAK_JobsFilter h5,
 #EAK_JobsFilter p,
@@ -36,4 +39,5 @@
   display: block;
   margin-top: 0.5em;
   padding: 0.3em 0.6em;
+  color: black;
 }
