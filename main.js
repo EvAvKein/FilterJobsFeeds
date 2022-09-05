@@ -115,9 +115,7 @@ function initialize() {
       titleElem.innerText = "Total jobs filtered: " + totalFiltered;
     };
 
-    console.log("initOnceReady")
     const initOnceReady = new MutationObserver(async () => {
-      console.log("body ready!")
       initOnceReady.disconnect();
 
       titleElem.innerText = "Searching for site specs...";
@@ -135,7 +133,6 @@ function initialize() {
 
       const filterOnMutation = new MutationObserver(() => {filterJobs(pageData)});
       function startFiltering() {
-        console.log("started filtering")
         filterJobs(pageData);
         filterOnMutation.observe(
           document.querySelector(pageData.jobsList),
@@ -143,7 +140,6 @@ function initialize() {
         );
       };
 
-      console.log("manual start?", pageData.manualStart)
       if (!pageData.manualStart) {
         startFiltering();
         return;
