@@ -98,7 +98,7 @@ function initialize() {
   const siteData = findSiteData();
   if (!siteData) {
     titleElem.innerText = "Error: Failed to load specs for this site";
-    descriptionElem.innerText = "Please report this at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (with this page's URL)";
+    descriptionElem.innerText = "Try refreshing the page, and if this error remains please report this at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (with this page's URL)";
     return;
   };
 
@@ -124,7 +124,7 @@ function initialize() {
       const pageData = await findPageData(siteData);
       if (!pageData) {
         titleElem.innerText = "Error: Failed to load specs for this page";
-        descriptionElem.innerText = "Please report this at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (with this page's URL and a screenshot)";
+        descriptionElem.innerText = "Try refreshing the page, and if this error remains please report this at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (with this page's URL and a screenshot)";
         return;
       };
 
