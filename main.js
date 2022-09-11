@@ -47,7 +47,7 @@ function lookForPageData(siteData) {
 
 async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g AngelList's logged-out jobs page) that checking page elements right as it loads will be premature
   let data;
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     data = lookForPageData(siteData);
     if (data) break; 
     await new Promise(resolve => setTimeout(resolve, 250));
