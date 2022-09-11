@@ -98,7 +98,7 @@ function initialize() {
   const siteData = findSiteData();
   if (!siteData) {
     titleElem.innerText = "Error: Failed to load specs for this site";
-    descriptionElem.innerText = "Try refreshing the page, and if this error remains please report this at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (with this page's URL)";
+    descriptionElem.innerHTML = 'Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)';
     return;
   };
 
@@ -118,13 +118,13 @@ function initialize() {
     const initOnceReady = new MutationObserver(async () => {
       initOnceReady.disconnect();
 
-      titleElem.innerText = "Searching for site specs...";
+      titleElem.innerText = "Searching for page specs...";
       descriptionElem.innerText = "";
 
       const pageData = await findPageData(siteData);
       if (!pageData) {
         titleElem.innerText = "Error: Failed to load specs for this page";
-        descriptionElem.innerText = "Try refreshing the page, and if this error remains please report this at https://github.com/EvAvKein/FilterJobsFeeds/issues/new (with this page's URL and a screenshot)";
+        descriptionElem.innerHTML = 'Try refreshing the page, and if this error remains please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL & a screenshot)';
         return;
       };
 

@@ -27,6 +27,13 @@
 
 #EAK_JobsFilter p {font-size: 0.8em}
 
+#EAK_JobsFilter a {color:goldenrod}
+#EAK_JobsFilter a:hover,
+#EAK_JobsFilter a:focus,
+#EAK_JobsFilter a:active {
+  color:gold
+}
+
 #EAK_toggleSection hr {
   margin: 0.5em 0;
   padding: 0.1em;
