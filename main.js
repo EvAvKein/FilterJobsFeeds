@@ -45,7 +45,7 @@ function lookForPageData(siteData) {
   return data;
 };
 
-async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g AngelList's logged-out jobs page) that checking page elements right as it loads will be premature
+async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g AngelList's logged-out jobs page) that checking page elements right as the page loads would be premature
   let data;
   for (let i = 0; i < 10; i++) {
     data = lookForPageData(siteData);
@@ -157,18 +157,15 @@ function initialize() {
       toggleButtonElem.innerText = "ACTIVATE";
       toggleSectionElem.appendChild(toggleButtonElem);
 
-      toggleButtonElem.addEventListener("click", function manualStartFiltering() {
+      toggleButtonElem.addEventListener("click", () => {
         startFiltering();
-        toggleButtonElem.removeEventListener("click", manualStartFiltering);
         toggleSectionElem.remove();
-      });
+      }, {once: true});
 
       containerElem.appendChild(toggleSectionElem);
     });
-    initOnceReady.observe(
-      document.body,
-      {childList: true, subtree: true}
-    );
+
+    initOnceReady.observe(document.body, {childList: true, subtree: true});
   });
 };
 initialize();
