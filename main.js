@@ -79,6 +79,7 @@ function initialize() {
   const summaryElem = document.createElement("summary");
   const descriptionElem = document.createElement("p");
   const placeholderFilterListElem = document.createElement("ul");
+  detailsElem.open = true;
   detailsElem.appendChild(summaryElem);
   detailsElem.appendChild(descriptionElem);
   detailsElem.appendChild(placeholderFilterListElem);
@@ -157,24 +158,17 @@ function initialize() {
         return;
       };
 
-      const activateSectionElem = document.createElement("section");
-      activateSectionElem.id = "EAK_activateSection";
-      activateSectionElem.innerHTML = `
-        <hr>
-        <h6> Activate once you're ready to browse! </h6>
-        <p> Manual activation is required due to conflicts with search/sort functionalities,<br> so first make sure you're done editing those! </p>
-      `; // dont need references to any of these, so there's no reason to not use innerHTML. it halves the complexity & lines of code in this case
+      summaryElem.innerText = "Activate once you're ready to browse!";
+      descriptionElem.innerText = "Manual activation is required due to conflicts with search/sort functionalities, so first make sure you're done editing those!";
 
       const toggleButtonElem = document.createElement("button");
       toggleButtonElem.innerText = "ACTIVATE";
-      activateSectionElem.appendChild(toggleButtonElem);
+      containerElem.appendChild(toggleButtonElem);
 
       toggleButtonElem.addEventListener("click", () => {
         startFiltering();
-        activateSectionElem.remove();
+        toggleButtonElem.remove();
       }, {once: true});
-
-      containerElem.appendChild(activateSectionElem);
     });
 
     initOnceReady.observe(document.body, {childList: true, subtree: true});
