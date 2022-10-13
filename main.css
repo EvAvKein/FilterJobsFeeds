@@ -14,18 +14,14 @@
 
 #EAK_JobsFilter * {color:gainsboro}
 
-#EAK_JobsFilter h5,
-#EAK_JobsFilter p,
-#EAK_toggleSection h6 {
-  margin: 0;
-}
-#EAK_JobsFilter h5,
-#EAK_toggleSection h6 {
-  color:white;
-  font-size: 1em;
-}
+#EAK_JobsFilter summary {cursor: pointer}
 
-#EAK_JobsFilter p {font-size: 0.8em}
+#EAK_JobsFilter details p {margin: 0}
+
+#EAK_JobsFilter details p,
+#EAK_JobsFilter details ul {
+  font-size: 0.8em
+}
 
 #EAK_JobsFilter a {color:goldenrod}
 #EAK_JobsFilter a:hover,
@@ -34,14 +30,20 @@
   color:gold
 }
 
-#EAK_toggleSection hr {
+#EAK_activateSection > h6 {
+  color:white;
+  font-size: 1em;
+  margin: 0;
+}
+
+#EAK_activateSection > hr {
   margin: 0.5em 0;
   padding: 0.1em;
   background-color:dodgerblue;
 }
 
-#EAK_toggleSection p {font-size: 0.9em}
-#EAK_toggleSection button {
+#EAK_activateSection > p {font-size: 0.9em}
+#EAK_activateSection > button {
   cursor: pointer;
   display: block;
   margin-top: 0.5em;

@@ -55,12 +55,14 @@ async function findPageData(siteData) { // because some pages' body loads slowly
   return data;
 };
 
-function stringsArrayToList(array) {
-  let sentence = "";
-  for (const [index, item] of array.entries()) { // initially wanted to use Array.reduce(), because this is a (rare) perfect case for it, but it's just not readable enough
-    sentence += (index ? ", " + item : item);
-  };
-  return sentence;
+function filtersToListElem(filters) {
+  const ul = document.createElement("ul");
+  filters.forEach((filter) => {
+    const li = document.createElement("li");
+    li.innerText = filter.string + ": " + filter.removedCount;
+    ul.appendChild(li);
+  });
+  return ul;
 };
 
 async function getFilters() {
@@ -71,28 +73,17 @@ async function getFilters() {
   });
 };
 
-function filterListings(listingSelector, filteredStrings) {
-  const allListings = Array.from(document.querySelectorAll(listingSelector));
-
-  let filteredCount = 0;
-  allListings.forEach((listingElem) => {
-    const matchesAnyFilter = filteredStrings.some((filter) => listingElem.textContent.includes(filter));
-
-    if (matchesAnyFilter) {
-      listingElem.remove();
-      filteredCount++;
-    };
-  });
-  return filteredCount;
-};
-
 function initialize() {
   const containerElem = document.createElement("aside");
-  const titleElem = document.createElement("h5");
+  const detailsElem = document.createElement("details")
+  const summaryElem = document.createElement("summary");
   const descriptionElem = document.createElement("p");
+  const placeholderFilterListElem = document.createElement("ul");
+  detailsElem.appendChild(summaryElem);
+  detailsElem.appendChild(descriptionElem);
+  detailsElem.appendChild(placeholderFilterListElem);
+  containerElem.appendChild(detailsElem);
   containerElem.id = "EAK_JobsFilter";
-  containerElem.appendChild(titleElem);
-  containerElem.appendChild(descriptionElem);
   document.body.appendChild(containerElem);
 
   const siteData = findSiteData();
@@ -102,24 +93,46 @@ function initialize() {
     return;
   };
 
-  getFilters().then((filters) => {
-    if (!filters?.length) {
-      titleElem.innerText = "No filters added!";
+  getFilters().then((filtersArray) => {
+    if (!filtersArray?.length) {
+      summaryElem.innerText = "No filters added!";
       descriptionElem.innerText = "Edit your filters in the extension settings";
       return;
     };
     
     let totalFiltered = 0;
-    function filterJobs(pageData) {
-      totalFiltered += filterListings(pageData.jobItem, filters);
-      titleElem.innerText = "Total jobs filtered: " + totalFiltered;
+    const filters = filtersArray.map((filter) => {
+      return {string: filter, removedCount: 0}
+    });
+
+    function filterListings(pageData) {
+      const allListings = Array.from(document.querySelectorAll(pageData.jobItem));
+    
+      allListings.forEach((listingElem) => {
+        try { // would just use a for-of loop and "break" instead of "throw", but it doesn't seem possible for an array of objects while also recieving the index param (but please commit a refactor if i'm wrong)
+          filters.forEach((filter, index) => {
+            if (listingElem.textContent.includes(filter.string)) {
+              listingElem.remove();
+  
+              totalFiltered++;
+              filters[index].removedCount++;
+              throw true;
+            };
+          });
+        } catch {}
+      });
+
+      summaryElem.innerText = "Total jobs filtered: " + totalFiltered;
+      detailsElem.querySelector("ul").replaceWith(filtersToListElem(filters));
+      // ^ i compared this to updating the count element upon every match in the filters loop, and this implementation is faster
+      // (performance for both was measured by pushing a before-and-after difference of performance.now() to an array and averaging that array once in a while. count elem update statement was "containerElem.querySelector(`ul :nth-child(${index + 1}) span`).innerText = filters[index].removedCount")
     };
 
     const initOnceReady = new MutationObserver(async () => {
       initOnceReady.disconnect();
 
-      titleElem.innerText = "Searching for page specs...";
-      descriptionElem.innerText = "";
+      summaryElem.innerText = "Searching for page specs...";
+      descriptionElem.innerHTML = 'If this message persists, please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a>';
 
       const pageData = await findPageData(siteData);
       if (!pageData) {
@@ -128,12 +141,11 @@ function initialize() {
         return;
       };
 
-      titleElem.innerText = "";
-      descriptionElem.innerText = "Filtering: " + stringsArrayToList(filters);
-
-      const filterOnMutation = new MutationObserver(() => {filterJobs(pageData)});
+      const filterOnMutation = new MutationObserver(() => {filterListings(pageData)});
       function startFiltering() {
-        filterJobs(pageData);
+        descriptionElem.remove();
+        filterListings(pageData);
+
         filterOnMutation.observe(
           document.querySelector(pageData.jobsList),
           {childList: true, subtree: true}
@@ -145,9 +157,9 @@ function initialize() {
         return;
       };
 
-      const toggleSectionElem = document.createElement("section");
-      toggleSectionElem.id = "EAK_toggleSection";
-      toggleSectionElem.innerHTML = `
+      const activateSectionElem = document.createElement("section");
+      activateSectionElem.id = "EAK_activateSection";
+      activateSectionElem.innerHTML = `
         <hr>
         <h6> Activate once you're ready to browse! </h6>
         <p> Manual activation is required due to conflicts with search/sort functionalities,<br> so first make sure you're done editing those! </p>
@@ -155,14 +167,14 @@ function initialize() {
 
       const toggleButtonElem = document.createElement("button");
       toggleButtonElem.innerText = "ACTIVATE";
-      toggleSectionElem.appendChild(toggleButtonElem);
+      activateSectionElem.appendChild(toggleButtonElem);
 
       toggleButtonElem.addEventListener("click", () => {
         startFiltering();
-        toggleSectionElem.remove();
+        activateSectionElem.remove();
       }, {once: true});
 
-      containerElem.appendChild(toggleSectionElem);
+      containerElem.appendChild(activateSectionElem);
     });
 
     initOnceReady.observe(document.body, {childList: true, subtree: true});
