@@ -78,7 +78,6 @@ function initialize() {
   const summaryElem = document.createElement("summary");
   const descriptionElem = document.createElement("p");
   const placeholderFilterListElem = document.createElement("ul");
-  detailsElem.open = true;
   detailsElem.appendChild(summaryElem);
   detailsElem.appendChild(descriptionElem);
   detailsElem.appendChild(placeholderFilterListElem);
