@@ -18,10 +18,10 @@
 
 #EAK_JobsFilter summary {cursor: pointer}
 
-#EAK_JobsFilter details p {margin: 0}
+#EAK_JobsFilter p {margin: 0}
 
-#EAK_JobsFilter details p,
-#EAK_JobsFilter details ul {
+#EAK_JobsFilter p,
+#EAK_JobsFilter ul {
   font-size: 0.8em
 }
 
@@ -35,6 +35,7 @@
 #EAK_JobsFilter button {
   cursor: pointer;
   display: block;
+  box-sizing: border-box;
   width: 100%;
   margin-top: 0.5em;
   padding: 0.3em 0.6em;

@@ -74,7 +74,6 @@ async function getFilters() {
 };
 
 function initialize() {
-  const containerElem = document.createElement("aside");
   const detailsElem = document.createElement("details")
   const summaryElem = document.createElement("summary");
   const descriptionElem = document.createElement("p");
@@ -83,9 +82,8 @@ function initialize() {
   detailsElem.appendChild(summaryElem);
   detailsElem.appendChild(descriptionElem);
   detailsElem.appendChild(placeholderFilterListElem);
-  containerElem.appendChild(detailsElem);
-  containerElem.id = "EAK_JobsFilter";
-  document.body.appendChild(containerElem);
+  detailsElem.id = "EAK_JobsFilter";
+  document.body.appendChild(detailsElem);
 
   const siteData = findSiteData();
   if (!siteData) {
@@ -126,7 +124,7 @@ function initialize() {
       summaryElem.innerText = "Total jobs filtered: " + totalFiltered;
       detailsElem.querySelector("ul").replaceWith(filtersToListElem(filters));
       // ^ i compared this to updating the count element upon every match in the filters loop, and this implementation is faster
-      // (performance for both was measured by pushing a before-and-after difference of performance.now() to an array and averaging that array once in a while. count elem update statement was "containerElem.querySelector(`ul :nth-child(${index + 1}) span`).innerText = filters[index].removedCount")
+      // (performance for both was measured by pushing a before-and-after difference of performance.now() to an array and averaging that array once in a while. count elem update statement was "detailsElem.querySelector(`ul :nth-child(${index + 1}) span`).innerText = filters[index].removedCount")
     };
 
     const initOnceReady = new MutationObserver(async () => {
@@ -163,7 +161,7 @@ function initialize() {
 
       const toggleButtonElem = document.createElement("button");
       toggleButtonElem.innerText = "ACTIVATE";
-      containerElem.appendChild(toggleButtonElem);
+      detailsElem.appendChild(toggleButtonElem);
 
       toggleButtonElem.addEventListener("click", () => {
         startFiltering();
