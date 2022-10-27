@@ -1,6 +1,6 @@
 # Filter Jobs Feeds
 
-A Chrome extension for filtering jobs feeds by blacklisting text, currently compatible with LinkedIn, Indeed, and AngelList
+A Chrome extension for filtering jobs feeds by blacklisting text, currently compatible with LinkedIn, Indeed, AngelList, and Dice
 
 <a href="https://chrome.google.com/webstore/detail/filter-jobs-feeds/edebgnaafidhaiepkjknfmdonoagkjhe">
   <img src="availableInChromeWebStore.png" alt="Available in Chrome Web Store"/>
