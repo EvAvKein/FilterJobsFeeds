@@ -86,7 +86,7 @@ function initialize() {
 
   const siteData = findSiteData();
   if (!siteData) {
-    titleElem.innerText = "Error: Failed to load specs for this site";
+    summaryElem.innerText = "Error: Failed to load specs for this site";
     descriptionElem.innerHTML = 'Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)';
     return;
   };
@@ -134,7 +134,7 @@ function initialize() {
 
       const pageData = await findPageData(siteData);
       if (!pageData) {
-        titleElem.innerText = "Error: Failed to load specs for this page";
+        summaryElem.innerText = "Error: Failed to load specs for this page";
         descriptionElem.innerHTML = 'Try refreshing the page, and if this error remains please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL & a screenshot)';
         return;
       };
