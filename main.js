@@ -166,6 +166,7 @@ function initialize() {
       toggleButtonElem.addEventListener("click", () => {
         startFiltering();
         toggleButtonElem.remove();
+        detailsElem.open = false;
       }, {once: true});
     });
 
