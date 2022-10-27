@@ -22,8 +22,12 @@
 
 #EAK_JobsFilter p,
 #EAK_JobsFilter ul {
-  font-size: 0.8em
+  font-size: 0.8em;
+  padding-inline-start: 0;
+  margin: 0;
 }
+
+#EAK_JobsFilter li {list-style: none}
 
 #EAK_JobsFilter a {color:goldenrod}
 #EAK_JobsFilter a:hover,

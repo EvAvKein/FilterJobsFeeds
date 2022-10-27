@@ -18,6 +18,9 @@ const compatibleSites = [
     new PageData(".jobs-search__results-list", ".job-search-card"),
     new PageData(".scaffold-layout__list-container", ".job-card-container"),
   ]),
+  new SiteData("indeed", [
+    new PageData(".jobsearch-ResultsList", ".jobsearch-ResultsList > li", false, "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"), // would've just fixed those quirks if i could sufficiently figure them out. a fix commit would be welcomed
+  ]),
   new SiteData("angel.co", [
     new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // this page just has some listings from a few popular companies before prompting the user to register, but i'm supporting it on principle. also, wont be surprised if these class suffixes end up changing when they recompile for an update
     new PageData('[data-test="JobSearchResults"]', '[data-test="StartupResult"]', true),
