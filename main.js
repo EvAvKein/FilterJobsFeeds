@@ -1,8 +1,9 @@
 class PageData {
-  constructor(jobsListSelector, jobItemSelector, manualStart) {
+  constructor(jobsListSelector, jobItemSelector, manualStart, disclaimer) {
     this.jobsList = jobsListSelector;
     this.jobItem = jobItemSelector;
     this.manualStart = manualStart; // created due to AngelList throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering mutationObserver is attached. this is not happening with LinkedIn. AngelList uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
+    this.disclaimer = disclaimer;
   };
 };
 
@@ -76,11 +77,11 @@ async function getFilters() {
 function initialize() {
   const detailsElem = document.createElement("details")
   const summaryElem = document.createElement("summary");
-  const descriptionElem = document.createElement("p");
   const placeholderFilterListElem = document.createElement("ul");
+  const descriptionElem = document.createElement("p");
   detailsElem.appendChild(summaryElem);
-  detailsElem.appendChild(descriptionElem);
   detailsElem.appendChild(placeholderFilterListElem);
+  detailsElem.appendChild(descriptionElem);
   detailsElem.id = "EAK_JobsFilter";
   document.body.appendChild(detailsElem);
 
@@ -141,7 +142,7 @@ function initialize() {
 
       const filterOnMutation = new MutationObserver(() => {filterListings(pageData)});
       function startFiltering() {
-        descriptionElem.remove();
+        descriptionElem.innerText = pageData.disclaimer || "";
         filterListings(pageData);
 
         filterOnMutation.observe(
