@@ -25,6 +25,9 @@ const compatibleSites = [
     new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // this page just has some listings from a few popular companies before prompting the user to register, but i'm supporting it on principle. also, wont be surprised if these class suffixes end up changing when they recompile for an update
     new PageData('[data-test="JobSearchResults"]', '[data-test="StartupResult"]', true),
   ]),
+  new SiteData("f6s", [
+    new PageData("#csResultsBlock", ".result-item"),
+  ]),
   new SiteData("dice", [
     new PageData("dhi-search-cards-widget", "dhi-search-card"),
   ]),
