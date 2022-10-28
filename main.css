@@ -8,7 +8,7 @@
   background-color:navy;
   max-height: 100%;
   overflow: auto;
-  font-size: 1rem;
+  font-size: 0.45cm; /* a cross-site measurement, and a better one than px (because varying resolutions) */
   max-width: 20em;
   padding: 0.5em;
   padding-right: 0.75em;
