@@ -92,6 +92,8 @@ function initialize() {
   detailsElem.appendChild(placeholderFilterListElem);
   detailsElem.appendChild(descriptionElem);
   detailsElem.id = "EAK_JobsFilter";
+  summaryElem.innerText = "Loading...";
+  descriptionElem.innerText = 'If you have time to read this, the current website is likely monopolizing script execution. If this issue doesn\'t resolve itself within 1-2 minutes, please report it at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)';
   document.body.appendChild(detailsElem);
 
   const siteData = findSiteData();
