@@ -84,7 +84,7 @@ async function getFilters() {
 };
 
 function initialize() {
-  const detailsElem = document.createElement("details")
+  const detailsElem = document.createElement("details");
   const summaryElem = document.createElement("summary");
   const placeholderFilterListElem = document.createElement("ul");
   const descriptionElem = document.createElement("p");
@@ -112,7 +112,7 @@ function initialize() {
     
     let totalFiltered = 0;
     const filters = filtersArray.map((filter) => {
-      return {string: filter, removedCount: 0}
+      return {string: filter, removedCount: 0};
     });
 
     function filterListings(pageData) {
@@ -129,7 +129,7 @@ function initialize() {
               throw true;
             };
           });
-        } catch {}
+        } catch {};
       });
 
       summaryElem.innerText = "Total jobs filtered: " + totalFiltered;
