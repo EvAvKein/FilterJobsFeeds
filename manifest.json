@@ -2,7 +2,7 @@
   "name": "Filter Jobs Feeds",
   "description": "A Chrome extension for filtering jobs feeds by blacklisting text",
   "icons": {"128": "filterJobsFeeds.png"},
-  "version": "1.5.4",
+  "version": "1.5.5",
 
   "permissions": ["storage"],
   "options_ui": {
@@ -17,7 +17,7 @@
     "matches": [
       "https://www.linkedin.com/jobs/search*", "https://www.linkedin.com/jobs/collection*", "https://www.linkedin.com/jobs/jobs-in-*",
       "https://www.indeed.com/", "https://www.indeed.com/?from=*", "https://www.indeed.com/jobs*",
-      "https://angel.co/jobs",
+      "https://wellfound.com/jobs",
       "https://www.f6s.com/jobs", "https://www.f6s.com/jobs?*",
       "https://www.dice.com/jobs", "https://www.dice.com/jobs?*"
     ],

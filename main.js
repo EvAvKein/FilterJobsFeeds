@@ -2,7 +2,7 @@ class PageData {
   constructor(jobsListSelector, jobItemSelector, manualStart, disclaimer) {
     this.jobsList = jobsListSelector;
     this.jobItem = jobItemSelector;
-    this.manualStart = manualStart; // created due to AngelList throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering mutationObserver is attached. this is not happening with LinkedIn. AngelList uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
+    this.manualStart = manualStart; // created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering mutationObserver is attached. this is not happening with LinkedIn. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
     this.disclaimer = disclaimer;
   };
 };
@@ -10,7 +10,7 @@ class PageData {
 class SiteData {
   constructor(siteName, pagesDataArray) {
     this.name = siteName;
-    this.pages = pagesDataArray; // created due to both LinkedIn & AngelList (and likely more) having differently-attributed elements for logged-out and logged-out job browsing. didn't do explicit "logged in" & "logged out" URL-based setups because AngelList uses for the exact same URL for both pages
+    this.pages = pagesDataArray; // created due to both LinkedIn & Wellfound (and likely more) having differently-attributed elements for logged-out and logged-out job browsing. didn't do explicit "logged in" & "logged out" URL-based setups because Wellfound uses for the exact same URL for both pages
   };
 };
 const compatibleSites = [
@@ -21,7 +21,7 @@ const compatibleSites = [
   new SiteData("indeed", [
     new PageData(".jobsearch-ResultsList", ".jobsearch-ResultsList > li", false, "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"), // would've just fixed those quirks if i could sufficiently figure them out. a fix commit would be welcomed
   ]),
-  new SiteData("angel.co", [
+  new SiteData("wellfound.com", [
     new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // this page just has some listings from a few popular companies before prompting the user to register, but i'm supporting it on principle. also, wont be surprised if these class suffixes end up changing when they recompile for an update
     new PageData('[data-test="JobSearchResults"]', '[data-test="StartupResult"]', true),
   ]),
@@ -55,7 +55,7 @@ function lookForPageData(siteData) {
   return data;
 };
 
-async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g AngelList's logged-out jobs page) that checking page elements right as the page loads would be premature
+async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g Wellfound's logged-out jobs page) that checking page elements right as the page loads would be premature
   let data;
   for (let i = 0; i < 10; i++) {
     data = lookForPageData(siteData);
