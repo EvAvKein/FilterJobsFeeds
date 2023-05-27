@@ -1,6 +1,7 @@
 /* some declarations here might seem redundant, but they exist to override style sheets of particular pages */
 
 #EAK_JobsFilter {
+  font-family: Arial;
   position: fixed;
   z-index: 99999;
   bottom: 0;
