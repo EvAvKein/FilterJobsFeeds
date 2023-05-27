@@ -119,17 +119,15 @@ function initialize() {
       const allListings = Array.from(document.querySelectorAll(pageData.jobItem));
     
       allListings.forEach((listingElem) => {
-        try { // would just use a for-of loop and "break" instead of "throw", but it doesn't seem possible for an array of objects while also recieving the index param (but please commit a refactor if i'm wrong)
-          filters.forEach((filter, index) => {
-            if (listingElem.textContent.includes(filter.string)) {
-              listingElem.remove();
-  
-              totalFiltered++;
-              filters[index].removedCount++;
-              throw true;
-            };
-          });
-        } catch {};
+        for (const [index, filter] of filters.entries()) {
+          if (listingElem.textContent.includes(filter.string)) {
+            listingElem.remove();
+
+            totalFiltered++;
+            filters[index].removedCount++;
+            break;
+          };
+        };
       });
 
       summaryElem.innerText = "Total jobs filtered: " + totalFiltered;
