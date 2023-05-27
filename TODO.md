@@ -2,3 +2,4 @@
 - Eliminate the need for manual activations
 - Eliminate the need for disclaimers
 - Style the settings page
+- Add dedicated store preview screenshots for Firefox
