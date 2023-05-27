@@ -27,5 +27,11 @@
   
   "author": "Eve Aviv Keinan",
 
-  "manifest_version": 3
+  "manifest_version": 3,
+
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "evavkein@gmail.com"
+    }
+  }
 }

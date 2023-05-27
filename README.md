@@ -1,10 +1,13 @@
 # Filter Jobs Feeds
 
-A Chrome extension for filtering jobs feeds by blacklisting text!
+A browser extension for filtering jobs feeds by blacklisting text!
 Currently compatible with: LinkedIn, Indeed, Wellfound, F6S, Dice
 
 <a href="https://chrome.google.com/webstore/detail/filter-jobs-feeds/edebgnaafidhaiepkjknfmdonoagkjhe">
-  <img src="availableInChromeWebStore.png" alt="Available in Chrome Web Store"/>
+  <img src="availableInChromeWebStore.png" alt="Available in Chrome Web Store" style="height: 3.5em"/>
+</a>
+<a href="https://addons.mozilla.org/en-CA/firefox/addon/filter-jobs-feeds/">
+  <img src="firefoxAddons.png" alt="Firefox Add-ons" style="height: 3.5em; opacity: 0.6"/> <!-- reduced opacity makes it similarly prominent to chrome's image -->
 </a>
 
 ---
