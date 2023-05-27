@@ -8,10 +8,10 @@ Every time a compatible page's list loads or updates, the extension will delete 
 Currently compatible with: LinkedIn, Indeed, Wellfound, F6S, Dice
 
 <a href="https://chrome.google.com/webstore/detail/filter-jobs-feeds/edebgnaafidhaiepkjknfmdonoagkjhe">
-  <img src="assets/storeBanners/chrome.png" alt="Available in Chrome Web Store" style="height: 3.5em"/>
+  <img src="assets/storeIcons/chrome.png" alt="Available in Chrome Web Store" height="35"/>
 </a>
 <a href="https://addons.mozilla.org/en-CA/firefox/addon/filter-jobs-feeds/">
-  <img src="assets/storeBanners/firefox.png" alt="Firefox Add-ons" style="height: 3.5em; opacity: 0.6"/> <!-- reduced opacity makes it similarly prominent to chrome's image -->
+  <img src="assets/storeIcons/firefox.png" alt="Firefox Add-ons" height="35"/>
 </a>
 
 ---
