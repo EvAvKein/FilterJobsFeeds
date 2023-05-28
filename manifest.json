@@ -6,11 +6,11 @@
 
   "permissions": ["storage"],
   "options_ui": {
-    "page": "settings.html",
+    "page": "popup/settings.html",
     "open_in_tab": false
   },
   "action": {
-    "default_popup": "settings.html"
+    "default_popup": "popup/settings.html"
   },
 
   "content_scripts": [{
@@ -21,8 +21,8 @@
       "https://www.f6s.com/jobs", "https://www.f6s.com/jobs?*",
       "https://www.dice.com/jobs", "https://www.dice.com/jobs?*"
     ],
-    "js": ["main.js"],
-    "css": ["vars.module.css", "main.css"]
+    "js": ["main/main.js"],
+    "css": ["vars.module.css", "main/main.css"]
   }],
   
   "author": "Eve Aviv Keinan",

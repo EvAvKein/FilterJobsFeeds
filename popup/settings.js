@@ -20,7 +20,7 @@ function newFilterListItem(filterText) {
 
   const deletionButton = document.createElement("button");
   deletionButton.title = `Delete "${filterText}"`
-  deletionButton.innerHTML = '<img src="assets/trash.svg" alt="Trash icon"/>';
+  deletionButton.innerHTML = '<img src="../assets/trash.svg" alt="Trash icon"/>';
   filterElem.appendChild(deletionButton);
 
   deletionButton.addEventListener("click", function deleteFilter() {
