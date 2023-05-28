@@ -1,3 +1,5 @@
+@import url(/vars.module.css); /* doesn't actually do anything, but serves as a reminder. see comment in file for explanation */
+
 /* some declarations here might seem redundant, but they exist to override style sheets of particular pages */
 
 #EAK_JobsFilter {
@@ -6,17 +8,17 @@
   z-index: 99999;
   bottom: 0;
   left: 0;
-  background-color:navy;
+  background-color: var(--FJF_backgroundColor);
   max-height: 100%;
   overflow: auto;
-  font-size: 0.45cm; /* a cross-site measurement, and a better one than px (because varying resolutions) */
+  font-size: 0.45cm; /* a measurement that's not affected by site stylesheet, and a better than px (because varying resolutions) */
   max-width: 20em;
   padding: 0.5em;
   padding-right: 0.75em;
   border-top-right-radius: 0.5em;
 }
 
-#EAK_JobsFilter * {color:gainsboro}
+#EAK_JobsFilter * {color: var(--FJF_textColor)}
 
 #EAK_JobsFilter summary {cursor: pointer}
 
@@ -45,5 +47,5 @@
   width: 100%;
   margin-top: 0.5em;
   padding: 0.3em 0.6em;
-  color: black;
+  color: var(--FJF_backgroundColor);
 }

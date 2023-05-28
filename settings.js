@@ -14,10 +14,13 @@ async function getFilters() { // i'd just chain a "then" after the storage's get
 
 function newFilterListItem(filterText) {
   const filterElem = document.createElement("li");
-  filterElem.innerText = filterText;
+  const textWrapper = document.createElement("pre"); 
+  textWrapper.innerText = filterText;
+  filterElem.appendChild(textWrapper);
 
   const deletionButton = document.createElement("button");
-  deletionButton.innerText = "Delete";
+  deletionButton.title = `Delete "${filterText}"`
+  deletionButton.innerHTML = '<img src="assets/trash.svg" alt="Trash icon"/>';
   filterElem.appendChild(deletionButton);
 
   deletionButton.addEventListener("click", function deleteFilter() {

@@ -1,13 +1,98 @@
-html {
-  font-family: Arial;
+@import url(/vars.module.css);
+
+body {
+  font-size: 0.35cm; /* for consistency between browsers */
+  min-width: 15em;
   width: max-content;
-  max-width: 30em;
+  padding: 0.25em;
+  font-family: Arial;
+  background-color: var(--FJF_backgroundColor);
+  color: var(--FJF_textColor);
 }
 
-#filterAddition {display: flex}
-#filterAddition input {flex-grow: 1}
+button {
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  border: none;
+  padding: 0;
+}
 
-li {font-size: 1.2em}
+h1 {
+  font-size: 1.75em;
+  margin: 0.5em 0 0.25em;
+}
+
+#filterAddition {
+  width: 100%;
+  display: flex;
+}
+
+#filterAddition button {
+  font-weight: bold;
+  background-color: var(--FJF_textSubColor);
+  padding: 0.25em;
+  border-radius: 0 0.25em 0.25em 0;
+  transition: background-color 350ms;
+}
+
+#filterAddition button:hover,
+#filterAddition button:focus {
+  background-color: var(--FJF_textColor);
+}
+
+#filterAddition input {
+  flex-grow: 1;
+  color: inherit;
+  background-color: inherit;
+  border: 0.1em solid var(--FJF_textSubColor);
+  outline-offset: 0.2em; /* so the focus outline wont overlap with the border */
+  transition: border-color 350ms;
+}
+
+#filterAddition input:hover,
+#filterAddition input:focus {
+  border-color: var(--FJF_textColor);
+}
+
+ul {
+  font-size: 1.4em;
+  padding-left: 0.5em;
+  margin: 0;
+}
+
+li {white-space: nowrap}
+li::marker {content: "- "}
 li + li {margin-top: 0.25em}
 
-button {margin-left: 0.5em}
+li button, li img {vertical-align: middle}
+
+li button {
+  float: right;
+  margin-left: 0.75em;
+  background-color: transparent;
+}
+
+li pre {
+  display: inline;
+  margin: 0;
+  font-family: inherit;
+  width: fit-content;
+}
+li pre::before, li pre::after {content: '"'}
+
+li::marker, li pre::before, li pre::after {
+  color: var(--FJF_textSubColor);
+}
+
+li img {
+  height: 1.1em;
+  vertical-align: middle;
+  filter: opacity(var(--FJF_inactiveOpacity));
+  transition: filter 350ms;
+}
+
+li button:hover img,
+li button:focus img {
+  filter: opacity(1);
+}
