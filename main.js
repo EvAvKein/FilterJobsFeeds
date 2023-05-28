@@ -55,12 +55,12 @@ function lookForPageData(siteData) {
   return data;
 };
 
-async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g Wellfound's logged-out jobs page) that checking page elements right as the page loads would be premature
+async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g Wellfound's logged-out page, Dice's page) that checking page elements right as the page loads would be premature
   let data;
   for (let i = 0; i < 10; i++) {
     data = lookForPageData(siteData);
-    if (data) break; 
-    await new Promise(resolve => setTimeout(resolve, 250));
+    if (data) break;
+    await new Promise(resolve => setTimeout(resolve, 350));
   };
   return data;
 };
