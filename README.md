@@ -18,9 +18,9 @@ Currently compatible with: LinkedIn, Indeed, Wellfound, F6S, Dice
 
 ## Contributing
 
-Feel free to open an issue regarding any contribution (or anything else) you have in mind!
+Feel free to open an [issue](https://github.com/EvAvKein/FilterJobsFeeds/issues) about anything you have in mind!
 
-For stuff in TODO.md, you have the go-ahead to submit a pull request without the issue (unless you wanna ask something first of course)
+Regarding stuff in the TODO.md file, you have the go-ahead to submit a pull request without posting the issue (unless you wanna ask something first of course)
 
 ---
 
