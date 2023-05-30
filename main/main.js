@@ -33,7 +33,14 @@
    */
   async function getFilters() {
     // function is copy-pasted from settings.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
-    return (await chrome.storage.sync.get(["filtered"])).filtered ?? [];
+    
+    /** By 2024, feel free to remove this migration code for "filtered" and directly serve the contents of "blacklist" */
+    const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
+    if (storage.filtered) {
+      await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
+      return storage.filtered;
+    };
+    return storage.blacklist ?? [];
   };
 
   let totalFiltered = 0;

@@ -22,7 +22,7 @@
     const newFilter = elems.textInput.value;
     const blacklistAfterAddition = [...blacklist, newFilter];
 
-    chrome.storage.sync.set({filtered: blacklistAfterAddition});
+    chrome.storage.sync.set({blacklist: blacklistAfterAddition});
     blacklist = blacklistAfterAddition;
     createFilterListItem(newFilter);
     elems.textInput.value = "";
@@ -47,8 +47,15 @@
    * @returns {Promise<string[]>}
    */
   async function getFilters() {
-    // function is copy-pasted from main.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
-    return (await chrome.storage.sync.get(["filtered"])).filtered ?? [];
+    // function is copy-pasted from settings.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
+    
+    /** By 2024, feel free to remove this migration code for "filtered" and directly serve the contents of "blacklist" */
+    const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
+    if (storage.filtered) {
+      await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
+      return storage.filtered;
+    };
+    return storage.blacklist ?? [];
   };
 
   /**
@@ -69,7 +76,7 @@
     deletionButton.addEventListener("click", function deleteFilter() {
       const blacklistAfterDeletion = blacklist.filter((filter) => filter != filterText);
 
-      chrome.storage.sync.set({filtered: blacklistAfterDeletion});
+      chrome.storage.sync.set({blacklist: blacklistAfterDeletion});
       blacklist = blacklistAfterDeletion;
 
       filterElem.remove();
@@ -82,7 +89,7 @@
     .then((storedBlacklist) => {
       storedBlacklist
         ? blacklist = storedBlacklist
-        : chrome.storage.sync.set({filtered: []});
+        : chrome.storage.sync.set({blacklist: []});
 
       blacklist.forEach((filterText) => {
         createFilterListItem(filterText);
