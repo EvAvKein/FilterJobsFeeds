@@ -1,16 +1,30 @@
+// @ts-check
+
+/** @typedef {import("../chrome.js").chrome} chrome */
+
 class PageData {
+  /**
+   * @param {string} jobsListSelector The selector for this page's wrapper for job listings. To be watched with a `MutationObserver`
+   * @param {string} jobItemSelector The selector for this page's job listings. To be queried and iterated through on initial load and further list mutations
+   * @param {boolean=} manualStart Whether to withhold filtering on this page until the user confirms they're done editing sort/search functionalities (due to unknown/irreconcilable conflicts between extension and site behavior)
+   * @param {string=} disclaimer Disclaimer text to be displayed under the filters list
+   */
   constructor(jobsListSelector, jobItemSelector, manualStart, disclaimer) {
     this.jobsList = jobsListSelector;
     this.jobItem = jobItemSelector;
-    this.manualStart = manualStart; // created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering mutationObserver is attached. this is not happening with LinkedIn. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
+    this.manualStart = manualStart; // created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering MutationObserver is attached. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
     this.disclaimer = disclaimer;
   };
 };
 
 class SiteData {
+  /**
+   * @param {string} siteName The website's name, as it appears in the domain name
+   * @param {PageData[]} pagesDataArray `PageData` for various job pages under this domains (e.g logged out, logged in)
+   */
   constructor(siteName, pagesDataArray) {
     this.name = siteName;
-    this.pages = pagesDataArray; // created due to both LinkedIn & Wellfound (and likely more) having differently-attributed elements for logged-out and logged-out job browsing. didn't do explicit "logged in" & "logged out" URL-based setups because Wellfound uses for the exact same URL for both pages
+    this.pages = pagesDataArray;
   };
 };
 const compatibleSites = [
@@ -33,6 +47,16 @@ const compatibleSites = [
   ]),
 ];
 
+/**
+ * @typedef {Object} Filter
+ * @property {string} string The blacklisted text
+ * @property {number} removedCount The amount of times (in this page load) that this filter's `string` was matched and prompted a listing's removal
+ */
+
+/**
+ * Retrieves compatible `SiteData` (if any) based on the current URL
+ * @returns {SiteData=} `SiteData` for current site (if found, which is predominantly the case)
+ */
 function findSiteData() {
   let data;
   for (const siteData of compatibleSites) {
@@ -44,7 +68,12 @@ function findSiteData() {
   return data;
 };
 
-function lookForPageData(siteData) {
+/**
+ * Queries for compatible `PageData` using the list selector 
+ * @param {SiteData} siteData The current site's `SiteData`, from which to query possible `PageData`s
+ * @returns {PageData=} `PageData` for the current page (liable to find none, for reasons such as slow loading or site refactors)
+ */
+function queryForPageData(siteData) {
   let data;
   for (const pageData of siteData.pages) {
     if (document.querySelector(pageData.jobsList)) {
@@ -55,16 +84,29 @@ function lookForPageData(siteData) {
   return data;
 };
 
-async function findPageData(siteData) { // because some pages' body loads slowly enough (e.g Wellfound's logged-out page, Dice's page) that checking page elements right as the page loads would be premature
+/**
+ * Retrieves compatible `PageData` (if any) based on the list selector, by querying it on a interval (to account for varying page-load speeds) with finite attempts
+ * @param {SiteData} siteData The current site's `SiteData`, from which to query possible `PageData`s
+ * @returns {Promise<PageData|undefined>} `PageData` for the current page (liable to find none, for reasons such as slow loading or site refactors)
+ */
+async function findPageData(siteData) {
+  // If/when making adjustments that affect max testing period:
+  // 1. Test on both Firefox & Chrome (former especially, as I can personally attest to its significantly slower load speed of at least one extension-relevant page)
+  // 2. Some good test targets (i.e particularly slow pages) are Dice's page and Wellfound's logged-out page
   let data;
   for (let i = 0; i < 10; i++) {
-    data = lookForPageData(siteData);
+    data = queryForPageData(siteData);
     if (data) break;
     await new Promise(resolve => setTimeout(resolve, 350));
   };
   return data;
 };
 
+/**
+ * Converts the provided `Filter` array into an HTML list
+ * @param {Filter[]} filters
+ * @returns {HTMLUListElement}
+ */
 function filtersToListElem(filters) {
   const ul = document.createElement("ul");
   filters.forEach((filter) => {
@@ -75,6 +117,10 @@ function filtersToListElem(filters) {
   return ul;
 };
 
+/**
+ * Retrieves blacklisted texts from the extension's storage
+ * @returns {Promise<string[]>}
+ */
 async function getFilters() {
   // function is copy-pasted from settings.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
   // also, see that file for context about the function
@@ -83,6 +129,9 @@ async function getFilters() {
   });
 };
 
+/**
+ * A function containing all the steps for setting up the extension on a given page
+ */
 function initialize() {
   const detailsElem = document.createElement("details");
   const summaryElem = document.createElement("summary");
@@ -115,12 +164,16 @@ function initialize() {
       return {string: filter, removedCount: 0};
     });
 
+    /**
+     * Deletes any listing element which contains blacklisted text, updating the filter count of that blacklist
+     * @param {PageData} pageData 
+     */
     function filterListings(pageData) {
       const allListings = Array.from(document.querySelectorAll(pageData.jobItem));
     
       allListings.forEach((listingElem) => {
         for (const [index, filter] of filters.entries()) {
-          if (listingElem.textContent.includes(filter.string)) {
+          if (listingElem.textContent && listingElem.textContent.includes(filter.string)) {
             listingElem.remove();
 
             totalFiltered++;
@@ -131,6 +184,7 @@ function initialize() {
       });
 
       summaryElem.innerText = "Total jobs filtered: " + totalFiltered;
+      
       detailsElem.querySelector("ul").replaceWith(filtersToListElem(filters));
       // ^ i compared this to updating the count element upon every match in the filters loop, and this implementation is faster
       // (performance for both was measured by pushing a before-and-after difference of performance.now() to an array and averaging that array once in a while. count elem update statement was "detailsElem.querySelector(`ul :nth-child(${index + 1}) span`).innerText = filters[index].removedCount")
@@ -149,9 +203,14 @@ function initialize() {
         return;
       };
 
+      descriptionElem.innerText = pageData.disclaimer || "";
+
       const filterOnMutation = new MutationObserver(() => {filterListings(pageData)});
+      /**
+       * Call the `filterListing` function & set up the `MutationObserver` which'll call it on every change inside the list element
+       */
       function startFiltering() {
-        descriptionElem.innerText = pageData.disclaimer || "";
+        if (!pageData) return; /* temporary. gonna refactor soon after this commit */
         filterListings(pageData);
 
         filterOnMutation.observe(
