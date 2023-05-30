@@ -6,10 +6,7 @@
  * Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging
  */
 (async () => {
-  /**
-   * All blacklisted texts
-   * @type {string[]}
-   */
+  /** @type {string[]} */
   let blacklist = [];
 
   /** Elements created in JS for JSdoc/TS type-safety (type-safe refactor suggestions welcome, not a fan of the readability consequences) */
