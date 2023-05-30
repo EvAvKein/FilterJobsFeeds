@@ -87,9 +87,7 @@
 
   getFilters()
     .then((storedBlacklist) => {
-      storedBlacklist
-        ? blacklist = storedBlacklist
-        : chrome.storage.sync.set({blacklist: []});
+      if (storedBlacklist) blacklist = storedBlacklist;
 
       blacklist.forEach((filterText) => {
         createFilterListItem(filterText);
