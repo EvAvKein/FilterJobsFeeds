@@ -36,7 +36,6 @@ interface Window {chrome: typeof chrome}
 /**
  * Use the chrome.storage API to store, retrieve, and track changes to user data.
  * Permissions:  "storage"
- * @since Chrome 20.
  */
 declare namespace chrome.storage {
     export interface StorageArea {

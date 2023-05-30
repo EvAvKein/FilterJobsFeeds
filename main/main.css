@@ -2,7 +2,7 @@
 
 /* some declarations here might seem redundant, but they exist to override style sheets of particular pages */
 
-#EAK_JobsFilter {
+#FJF_JobsFilter {
   font-family: Arial;
   position: fixed;
   z-index: 99999;
@@ -18,29 +18,29 @@
   border-top-right-radius: 0.5em;
 }
 
-#EAK_JobsFilter * {color: var(--FJF_textColor)}
+#FJF_JobsFilter * {color: var(--FJF_textColor)}
 
-#EAK_JobsFilter summary {cursor: pointer}
+#FJF_JobsFilter summary {cursor: pointer}
 
-#EAK_JobsFilter p {margin: 0}
+#FJF_JobsFilter p {margin: 0}
 
-#EAK_JobsFilter p,
-#EAK_JobsFilter ul {
+#FJF_JobsFilter p,
+#FJF_JobsFilter ul {
   font-size: 0.8em;
   padding-inline-start: 0;
   margin: 0;
 }
 
-#EAK_JobsFilter li {list-style: none}
+#FJF_JobsFilter li {list-style: none}
 
-#EAK_JobsFilter a {color:goldenrod}
-#EAK_JobsFilter a:hover,
-#EAK_JobsFilter a:focus,
-#EAK_JobsFilter a:active {
+#FJF_JobsFilter a {color:goldenrod}
+#FJF_JobsFilter a:hover,
+#FJF_JobsFilter a:focus,
+#FJF_JobsFilter a:active {
   color:gold
 }
 
-#EAK_JobsFilter button {
+#FJF_JobsFilter button {
   cursor: pointer;
   display: block;
   box-sizing: border-box;

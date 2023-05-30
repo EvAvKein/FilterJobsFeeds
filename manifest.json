@@ -22,7 +22,7 @@
       "https://www.dice.com/jobs", "https://www.dice.com/jobs?*"
     ],
     "js": ["main/main.js"],
-    "css": ["vars.module.css", "main/main.css"]
+    "css": ["shared/vars.module.css", "main/main.css"]
   }],
   
   "author": "Eve Aviv Keinan",

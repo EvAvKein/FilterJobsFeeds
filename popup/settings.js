@@ -1,8 +1,6 @@
 // @ts-check
 
-/** @typedef {import("../chrome.js").chrome} */
-
-/// 
+/** @typedef {import("../shared/chrome.d.ts").chrome}*/
 
 /**
  * All blacklisted texts
@@ -10,28 +8,57 @@
  */
 let filtered = [];
 
-/* CRITICAL: attempt to address the resulting type issues by importing a type override from types.d.ts */
+/** Elements created in JS for JSdoc/TS type-safety (type-safe refactor suggestions welcome, not a fan of the readability consequences) */
 const elems = {
-  textInput: document.querySelector("input"),
-  saveButton: document.querySelector("button"),
-  filtersList: document.querySelector("ul"),
+  filterAdditionWrapper: document.createElement("section"),
+  textInput: document.createElement("input"),
+  saveButton: document.createElement("button"),
+
+  filtersTitle: document.createElement("h1"),
+  filtersList: document.createElement("ul"),
 };
 
 /**
- * Retrieves blacklisted texts from the extension's storage
+ * Saves new blacklisted text by input value & adds to list
+ */
+function saveFilter() {
+  const newFilter = elems.textInput.value;
+  const filteredAfterAddition = [...filtered, newFilter];
+  
+  chrome.storage.sync.set({filtered: filteredAfterAddition});
+  filtered = filteredAfterAddition;
+  createFilterListItem(newFilter);
+  elems.textInput.value = "";
+}
+elems.saveButton.innerText = "Add";
+elems.saveButton.addEventListener("click", saveFilter);
+elems.textInput.addEventListener("keyup", (event) => {
+  if (event.key === "Enter") saveFilter();
+});
+
+elems.filterAdditionWrapper.id = "filterAddition";
+elems.filterAdditionWrapper.appendChild(elems.textInput);
+elems.filterAdditionWrapper.appendChild(elems.saveButton);
+
+elems.filtersTitle.innerText = "Currently Filtering:";
+document.body.appendChild(elems.filterAdditionWrapper);
+document.body.appendChild(elems.filtersTitle);
+document.body.appendChild(elems.filtersList);
+
+/**
+ * Retrieves blacklisted texts from the extension's storage, or provides empty array if no blacklist exists
  * @returns {Promise<string[]>}
  */
-async function getFilters() { // i'd just chain a "then" after the storage's get function if it was async. according to the docs (as of august 2022), they're planning on eventually making it so 
-  return new Promise((resolve) => {
-    chrome.storage.sync.get(["filtered"], (storage) => resolve(storage.filtered));
-  });
+async function getFilters() {
+  // function is copy-pasted from main.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
+  return (await chrome.storage.sync.get(["filtered"])).filtered ?? [];
 };
 
 /**
  * Creates and appends a new blacklist item to the list
  * @param {string} filterText Blacklisted text
  */
-function newFilterListItem(filterText) {
+function createFilterListItem(filterText) {
   const filterElem = document.createElement("li");
   const textWrapper = document.createElement("pre"); 
   textWrapper.innerText = filterText;
@@ -48,37 +75,19 @@ function newFilterListItem(filterText) {
     chrome.storage.sync.set({filtered: filteredAfterDeletion});
     filtered = filteredAfterDeletion;
 
-    deletionButton.removeEventListener("click", deleteFilter);
     filterElem.remove();
   }, {once: true});
   
   elems.filtersList.appendChild(filterElem);
 };
 
-/**
- * Saves new blacklisted text by input value & adds to list
- */
-function saveFilter() {
-  const newFilter = elems.textInput.value;
-  const filteredAfterAddition = [...filtered, newFilter];
-  
-  chrome.storage.sync.set({filtered: filteredAfterAddition});
-  filtered = filteredAfterAddition;
-  newFilterListItem(newFilter);
-  elems.textInput.value = "";
-};
-
-getFilters().then((filteredStrings) => {
-  if (!filteredStrings) chrome.storage.sync.set({filtered: []});
-  filtered = filteredStrings ?? [];
-  
-  filtered.forEach((filterText) => {
-    newFilterListItem(filterText);
+getFilters()
+  .then((storedBlacklist) => {
+    storedBlacklist
+      ? filtered = storedBlacklist
+      : chrome.storage.sync.set({filtered: []});
+    
+    filtered.forEach((filterText) => {
+      createFilterListItem(filterText);
+    });
   });
-  
-  elems.saveButton.addEventListener("click", saveFilter);
-  
-  elems.textInput.addEventListener("keyup", (event) => {
-    if (event.key === "Enter") saveFilter();
-  });
-});
