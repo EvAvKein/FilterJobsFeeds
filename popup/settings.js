@@ -2,9 +2,7 @@
 
 /** @typedef {import("../shared/chrome.d.ts").chrome} */
 
-/**
- * Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging
- */
+/** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
   /** @type {string[]} */
   let blacklist = [];
@@ -19,9 +17,7 @@
     filtersList: document.createElement("ul"),
   };
 
-  /**
-   * Saves new blacklisted text by input value & adds to list
-   */
+  /** Saves new blacklisted text by input value & adds to list */
   function saveFilter() {
     const newFilter = elems.textInput.value;
     const blacklistAfterAddition = [...blacklist, newFilter];

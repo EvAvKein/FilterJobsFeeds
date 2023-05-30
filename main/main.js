@@ -2,13 +2,9 @@
 
 /** @typedef {import("../shared/chrome.d.ts").chrome} chrome */
 
-/**
- * Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging
- */
+/** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
-  /**
-   * All extension elements, `details` being the outermost wrapper
-   */
+  /** All extension elements, `details` being the outermost wrapper */
   const elems = {
     details: document.createElement("details"),
     summary: document.createElement("summary"),
@@ -212,9 +208,7 @@
     );
   };
 
-  /**
-   * A function containing all the steps for setting up the extension on a given page
-   */
+  /** A function containing all the steps for setting up the extension on a given page */
   async function initialize() {
     setText(
       "Loading...",
