@@ -1,9 +1,3 @@
-/*
-  regarding the acronym prefixes:
-  css files which are not declared in the manifest cannot affect page content (extension-generated or otherwise), even when attempting to import said files via ones that are included in the manifest.
-  importing a css file via the manifest makes its styles global within a given page. the extension-specific acronym is intended to curb likelihood of overriding page-specific variables, as some of these variable names are otherwise very generic
-*/
-
 :root {
   --FJF_textColor: #FFF;
   --FJF_textSubColor: #FFFC;
