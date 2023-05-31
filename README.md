@@ -2,7 +2,7 @@
 
 A browser extension for filtering jobs feeds by blacklisting text!
 
-Add any text to your blacklist using the extension settings page.
+Add any text to your blacklist using the extension settings popup.
 Every time a compatible page's list loads or updates, the extension will delete any listing which includes any blacklisted text.
 
 Currently compatible with: LinkedIn, Indeed, Wellfound, F6S, Dice
