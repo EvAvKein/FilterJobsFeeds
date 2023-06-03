@@ -4,6 +4,29 @@
 
 /** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
+  /** @type {{blacklist?: string[], filtered?: string[]}} */
+  const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
+  if (storage.filtered) { // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
+    await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
+    storage.blacklist = structuredClone(storage.filtered);
+    delete storage.filtered;
+  };
+  
+  let blacklist = storage.blacklist ?? [];
+
+  /**
+   * @typedef {Object} Filter
+   * @property {string} string The blacklisted text
+   * @property {number} removedCount The amount of times (in this page load) that this filter's `string` was matched and prompted a listing's removal
+   */
+
+  /** @type {Filter[]} */
+  let filters = blacklist.map((filter) => {
+    return {string: filter, removedCount: 0};
+  });
+
+  let totalFiltered = 0;
+  
   /** All extension elements, `details` being the outermost wrapper */
   const elems = {
     details: document.createElement("details"),
@@ -26,36 +49,6 @@
     elems.summary.innerText = summary; 
     elems.description.innerText = description;
   }
-
-  /**
-   * Retrieves blacklisted texts from the extension's storage, or provides empty array if no blacklist exists
-   * @returns {Promise<string[]>}
-   */
-  async function getFilters() {
-    // function is copy-pasted from settings.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
-    
-    /** By 2024, feel free to remove this migration code for "filtered" and directly serve the contents of "blacklist" */
-    const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
-    if (storage.filtered) {
-      await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
-      return storage.filtered;
-    };
-    return storage.blacklist ?? [];
-  };
-
-  let totalFiltered = 0;
-
-  /** @type {string[]} */
-  let blacklist = [];
-
-  /**
-   * @typedef {Object} Filter
-   * @property {string} string The blacklisted text
-   * @property {number} removedCount The amount of times (in this page load) that this filter's `string` was matched and prompted a listing's removal
-   */
-
-  /** @type {Filter[]} */
-  let filters = [];
 
   /**
    * Converts the provided `Filter` array into an HTML list
@@ -232,7 +225,6 @@
       return;
     };
 
-    blacklist = await getFilters();
     if (!blacklist?.length) {
       setText(
         "No filters added!",
@@ -240,10 +232,6 @@
       );
       return;
     };
-
-    filters = blacklist.map((filter) => {
-      return {string: filter, removedCount: 0};
-    });
 
     const initOnceReady = new MutationObserver(async () => {
       initOnceReady.disconnect();

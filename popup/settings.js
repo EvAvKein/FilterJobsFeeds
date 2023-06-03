@@ -4,8 +4,15 @@
 
 /** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
-  /** @type {string[]} */
-  let blacklist = [];
+  /** @type {{blacklist?: string[], filtered?: string[]}} */
+  const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
+  if (storage.filtered) { // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
+    await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
+    storage.blacklist = structuredClone(storage.filtered);
+    delete storage.filtered;
+  };
+
+  let blacklist = storage.blacklist ?? [];
 
   /** Elements created in JS for JSdoc/TS type-safety (type-safe refactor suggestions welcome, not a fan of the readability consequences) */
   const elems = {
@@ -36,26 +43,10 @@
   elems.filterAdditionWrapper.id = "filterAddition";
   elems.filterAdditionWrapper.appendChild(elems.textInput);
   elems.filterAdditionWrapper.appendChild(elems.saveButton);
-
   elems.filtersTitle.innerText = "Currently Filtering:";
-  document.body.appendChild(elems.filterAdditionWrapper);
-  document.body.appendChild(elems.filtersTitle);
-  document.body.appendChild(elems.filtersList);
 
-  /**
-   * Retrieves blacklisted texts from the extension's storage, or provides empty array if no blacklist exists
-   * @returns {Promise<string[]>}
-   */
-  async function getFilters() {
-    // function is copy-pasted from settings.js, because using modules in chrome extensions seemingly requires either wacky code or a service-worker (the latter introducing another point of failure and just seeming excessive)
-    
-    /** By 2024, feel free to remove this migration code for "filtered" and directly serve the contents of "blacklist" */
-    const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
-    if (storage.filtered) {
-      await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
-      return storage.filtered;
-    };
-    return storage.blacklist ?? [];
+  for (const element of [elems.filterAdditionWrapper, elems.filtersTitle, elems.filtersList]) {
+    document.body.appendChild(element)
   };
 
   /**
@@ -73,8 +64,8 @@
     deletionButton.innerHTML = '<img src="../assets/trash.svg" alt="Trash icon"/>';
     filterElem.appendChild(deletionButton);
 
-    deletionButton.addEventListener("click", function deleteFilter() {
-      const blacklistAfterDeletion = blacklist.filter((filter) => filter != filterText);
+    deletionButton.addEventListener("click", function deleteBlacklisting() {
+      const blacklistAfterDeletion = blacklist.filter((filter) => filter !== filterText);
 
       chrome.storage.sync.set({blacklist: blacklistAfterDeletion});
       blacklist = blacklistAfterDeletion;
@@ -84,13 +75,8 @@
 
     elems.filtersList.appendChild(filterElem);
   };
-
-  getFilters()
-    .then((storedBlacklist) => {
-      if (storedBlacklist) blacklist = storedBlacklist;
-
-      blacklist.forEach((filterText) => {
-        createFilterListItem(filterText);
-      });
-    });
+  
+  blacklist.forEach((filterText) => {
+    createFilterListItem(filterText);
+  });
 })();
