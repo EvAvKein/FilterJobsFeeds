@@ -1,4 +1,3 @@
-- Add off-by-default setting for only displaying filter counters which removed at least one listing
 - Add feature for saving custom sites
 - Add ability to export & import blacklists
 - Add dedicated store preview screenshots for Firefox
