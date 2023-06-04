@@ -1,11 +1,11 @@
 // @ts-check
 
-/** @typedef {import("../shared/chrome.d.ts").chrome} */
-/** @typedef {import("../shared/settings.d.ts").settings} */
-
 /** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
-  /** @type {{blacklist?: string[], filtered?: string[], settings?: settings}} */
+  /** @typedef {import("../shared/chrome.d.ts").chrome} */
+  /** @typedef {import("../shared/settings.d.ts").settings} settingsObj */
+
+  /** @type {{blacklist?: string[], filtered?: string[], settings?: settingsObj}} */
   const storage = await chrome.storage.sync.get([
     "blacklist", "filtered",
     "settings"
