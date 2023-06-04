@@ -33,6 +33,11 @@
 
 #FJF_JobsFilter li {list-style: none}
 
+#FJF_JobsFilter li.note {
+  color: var(--FJF_textSubColor);
+  text-align: center;
+}
+
 #FJF_JobsFilter a {color:goldenrod}
 #FJF_JobsFilter a:hover,
 #FJF_JobsFilter a:focus,

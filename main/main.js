@@ -1,11 +1,12 @@
 // @ts-check
 
 /** @typedef {import("../shared/chrome.d.ts").chrome} chrome */
+/** @typedef {import("../shared/settings.d.ts").settings} settings */
 
 /** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
-  /** @type {{blacklist?: string[], filtered?: string[]}} */
-  const storage = await chrome.storage.sync.get(["blacklist", "filtered"]);
+  /** @type {{blacklist?: string[], filtered?: string[], settings?: settings}} */
+  const storage = await chrome.storage.sync.get(["blacklist", "filtered", "settings"]);
   if (storage.filtered) { // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
     await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
     storage.blacklist = structuredClone(storage.filtered);
@@ -13,6 +14,7 @@
   };
   
   let blacklist = storage.blacklist ?? [];
+  let settings = storage.settings ?? {};
 
   /**
    * @typedef {Object} Filter
@@ -58,10 +60,17 @@
   function filtersToListElem(filters) {
     const ul = document.createElement("ul");
     filters.forEach((filter) => {
+      if (settings.hideFilterCountersAtZero && !filter.removedCount) return;
       const li = document.createElement("li");
       li.innerText = filter.string + ": " + filter.removedCount;
       ul.appendChild(li);
     });
+    if (settings.hideFilterCountersAtZero) {
+      const li = document.createElement("li");
+      li.className = "note";
+      li.innerText = `[${filters.length - ul.children.length} hidden at zero]`;
+      ul.appendChild(li);
+    }
     return ul;
   };
 
