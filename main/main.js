@@ -6,7 +6,10 @@
 /** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
   /** @type {{blacklist?: string[], filtered?: string[], settings?: settings}} */
-  const storage = await chrome.storage.sync.get(["blacklist", "filtered", "settings"]);
+  const storage = await chrome.storage.sync.get([
+    "blacklist", "filtered",
+    "settings"
+  ]);
   if (storage.filtered) { // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
     await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
     storage.blacklist = structuredClone(storage.filtered);
@@ -50,7 +53,7 @@
   function setText(summary, description) {
     elems.summary.innerText = summary; 
     elems.description.innerText = description;
-  }
+  };
 
   /**
    * Converts the provided `Filter` array into an HTML list
@@ -59,12 +62,12 @@
    */
   function filtersToListElem(filters) {
     const ul = document.createElement("ul");
-    filters.forEach((filter) => {
-      if (settings.hideFilterCountersAtZero && !filter.removedCount) return;
+    for (const filter of filters) {
+      if (settings.hideFilterCountersAtZero && !filter.removedCount) continue;
       const li = document.createElement("li");
       li.innerText = filter.string + ": " + filter.removedCount;
       ul.appendChild(li);
-    });
+    }
     if (settings.hideFilterCountersAtZero) {
       const li = document.createElement("li");
       li.className = "note";

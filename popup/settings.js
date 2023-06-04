@@ -43,7 +43,7 @@
     blacklist = blacklistAfterAddition;
     createFilterListItem(newFilter);
     elems.textInput.value = "";
-  }
+  };
   elems.saveButton.innerText = "Add";
   elems.saveButton.addEventListener("click", saveFilter);
   elems.textInput.addEventListener("keyup", (event) => {
@@ -107,7 +107,7 @@
   /** @type {[string, HTMLElement][]} */
   const settingsByLabelAndInput = [
     ["Hide filter counters at zero", hideFilterCountersAtZero]
-  ]
+  ];
 
   for (const element of [
     elems.filterAdditionWrapper,
