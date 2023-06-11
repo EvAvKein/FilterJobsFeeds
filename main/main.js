@@ -52,7 +52,7 @@
    */
   function setText(summary, description) {
     elems.summary.innerText = summary; 
-    elems.description.innerText = description;
+    elems.description.innerHTML = description;
   };
 
   /**
