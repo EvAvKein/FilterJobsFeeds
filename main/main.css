@@ -1,4 +1,4 @@
-@import url(/vars.module.css); /* doesn't actually do anything, but serves as a reminder. see comment in file for explanation */
+@import url(/vars.module.css); /* import just serves as a reminder. doesn't actually do anything because in-page stylesheets aren't allowed to import other stylesheets, all stylesheets need to be declared in the manifest and this applies them */
 
 /* some declarations here might seem redundant, but they exist to override style sheets of particular pages */
 
