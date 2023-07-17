@@ -35,19 +35,19 @@
   };
 
   /** Saves new blacklisted text by input value & adds to list */
-  function saveFilter() {
+  function saveBlacklistItem() {
     const newFilter = elems.textInput.value;
     const blacklistAfterAddition = [...blacklist, newFilter];
 
     chrome.storage.sync.set({blacklist: blacklistAfterAddition});
     blacklist = blacklistAfterAddition;
-    createFilterListItem(newFilter);
+    appendBlacklistItemElem(newFilter);
     elems.textInput.value = "";
   };
   elems.saveButton.innerText = "Add";
-  elems.saveButton.addEventListener("click", saveFilter);
+  elems.saveButton.addEventListener("click", saveBlacklistItem);
   elems.textInput.addEventListener("keyup", (event) => {
-    if (event.key === "Enter") saveFilter();
+    if (event.key === "Enter") saveBlacklistItem();
   });
 
   elems.filterAdditionWrapper.id = "filterAddition";
@@ -59,7 +59,7 @@
    * Creates and appends a new blacklist item to the list
    * @param {string} filterText Blacklisted text
    */
-  function createFilterListItem(filterText) {
+  function appendBlacklistItemElem(filterText) {
     const filterElem = document.createElement("li");
     const textWrapper = document.createElement("pre"); 
     textWrapper.innerText = filterText;
@@ -82,7 +82,7 @@
     elems.filtersList.appendChild(filterElem);
   };
   blacklist.forEach((filterText) => {
-    createFilterListItem(filterText);
+    appendBlacklistItemElem(filterText);
   });
 
   /**
