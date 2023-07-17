@@ -1,7 +1,8 @@
-- Add feature for saving custom sites
-- Add ability to export & import blacklists
-- Add dedicated store preview screenshots for Firefox
-- Add some form of session-cumulative filter counter (Consider implementation: Pure total counter, or per local day, or per session? Auto-added to total or manually by button? Labelled by page/site? Entirely disabled by default?)
+Add:
+- Feature for saving custom sites
+- Exporting & importing blacklists as JSON
+- Some form of session-cumulative filter counter (Consider: Lifetime total counter, or per local day, or per session? Segmented by page/site? On/of-by-default, if even toggleable?)
 
-- Eliminate the need for manual activations
-- Eliminate the need for disclaimers
+Resolve:
+- Manual activation cases
+- Disclaimer cases
