@@ -21,12 +21,12 @@
 
   /** Elements created in JS for JSdoc/TS type-safety (type-safe refactor suggestions welcome, not a fan of the readability consequences) */
   const elems = {
-    filterAdditionWrapper: document.createElement("section"),
+    blacklistedAdditionWrapper: document.createElement("section"),
     textInput: document.createElement("input"),
     saveButton: document.createElement("button"),
 
-    filtersTitle: document.createElement("h1"),
-    filtersList: document.createElement("ul"),
+    blacklistTitle: document.createElement("h1"),
+    blacklistList: document.createElement("ul"),
 
     settingsTitle: document.createElement("h2"),
     settingsInputs: {
@@ -36,12 +36,12 @@
 
   /** Saves new blacklisted text by input value & adds to list */
   function saveBlacklistItem() {
-    const newFilter = elems.textInput.value;
-    const blacklistAfterAddition = [...blacklist, newFilter];
+    const newBlacklisted = elems.textInput.value;
+    const blacklistAfterAddition = [...blacklist, newBlacklisted];
 
     chrome.storage.sync.set({blacklist: blacklistAfterAddition});
     blacklist = blacklistAfterAddition;
-    appendBlacklistItemElem(newFilter);
+    appendBlacklistedElem(newBlacklisted);
     elems.textInput.value = "";
   };
   elems.saveButton.innerText = "Add";
@@ -50,40 +50,42 @@
     if (event.key === "Enter") saveBlacklistItem();
   });
 
-  elems.filterAdditionWrapper.id = "filterAddition";
-  elems.filterAdditionWrapper.appendChild(elems.textInput);
-  elems.filterAdditionWrapper.appendChild(elems.saveButton);
-  elems.filtersTitle.innerText = "Currently Filtering:";
+  elems.blacklistedAdditionWrapper.id = "filterAddition";
+  elems.blacklistedAdditionWrapper.appendChild(elems.textInput);
+  elems.blacklistedAdditionWrapper.appendChild(elems.saveButton);
+  elems.blacklistTitle.innerText = "Currently Filtering:";
 
   /**
    * Creates and appends a new blacklist item to the list
-   * @param {string} filterText Blacklisted text
+   * @param {string} blacklistedText Blacklisted text
    */
-  function appendBlacklistItemElem(filterText) {
-    const filterElem = document.createElement("li");
+  function appendBlacklistedElem(blacklistedText) {
+    const blacklistedElem = document.createElement("li");
     const textWrapper = document.createElement("pre"); 
-    textWrapper.innerText = filterText;
-    filterElem.appendChild(textWrapper);
+    textWrapper.innerText = blacklistedText;
+    blacklistedElem.appendChild(textWrapper);
 
     const deletionButton = document.createElement("button");
-    deletionButton.title = `Delete "${filterText}"`
+    deletionButton.title = `Delete "${blacklistedText}"`
     deletionButton.innerHTML = '<img src="../assets/trash.svg" alt="Trash icon"/>';
-    filterElem.appendChild(deletionButton);
+    blacklistedElem.appendChild(deletionButton);
 
     deletionButton.addEventListener("click", function deleteBlacklisting() {
-      const blacklistAfterDeletion = blacklist.filter((filter) => filter !== filterText);
+      const blacklistAfterDeletion = blacklist.filter((blacklisted) => blacklisted !== blacklistedText);
 
       chrome.storage.sync.set({blacklist: blacklistAfterDeletion});
       blacklist = blacklistAfterDeletion;
 
-      filterElem.remove();
+      blacklistedElem.remove();
     }, {once: true});
 
-    elems.filtersList.appendChild(filterElem);
+    elems.blacklistList.appendChild(blacklistedElem);
   };
-  blacklist.forEach((filterText) => {
-    appendBlacklistItemElem(filterText);
+  blacklist.forEach((blacklistedText) => {
+    appendBlacklistedElem(blacklistedText);
   });
+
+
 
   /**
    * @template {keyof settings} K
@@ -110,9 +112,9 @@
   ];
 
   for (const element of [
-    elems.filterAdditionWrapper,
-    elems.filtersTitle,
-    elems.filtersList,
+    elems.blacklistedAdditionWrapper,
+    elems.blacklistTitle,
+    elems.blacklistList,
     document.createElement("hr"),
     elems.settingsTitle
   ]) {

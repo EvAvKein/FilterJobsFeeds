@@ -21,13 +21,13 @@
 
   /**
    * @typedef {Object} Filter
-   * @property {string} string The blacklisted text
+   * @property {string} blacklisted The blacklisted text
    * @property {number} removedCount The amount of times (in this page load) that this filter's `string` was matched and prompted a listing's removal
    */
 
   /** @type {Filter[]} */
-  let filters = blacklist.map((filter) => {
-    return {string: filter, removedCount: 0};
+  let filters = blacklist.map((blacklisted) => {
+    return {blacklisted, removedCount: 0};
   });
 
   let totalFiltered = 0;
@@ -65,7 +65,7 @@
     for (const filter of filters) {
       if (settings.hideFilterCountersAtZero && !filter.removedCount) continue;
       const li = document.createElement("li");
-      li.innerText = filter.string + ": " + filter.removedCount;
+      li.innerText = filter.blacklisted + ": " + filter.removedCount;
       ul.appendChild(li);
     }
     if (settings.hideFilterCountersAtZero) {
@@ -180,7 +180,7 @@
     
       allListings.forEach((listingElem) => {
         for (const [index, filter] of filters.entries()) {
-          if (listingElem.textContent && listingElem.textContent.includes(filter.string)) {
+          if (listingElem.textContent && listingElem.textContent.includes(filter.blacklisted)) {
             listingElem.remove();
 
             totalFiltered++;
@@ -239,8 +239,8 @@
 
     if (!blacklist?.length) {
       setText(
-        "No filters added!",
-        "Edit your filters in the extension settings"
+        "Blacklist is empty!",
+        "Edit your blacklist in the extension settings"
       );
       return;
     };
