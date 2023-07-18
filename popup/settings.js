@@ -28,6 +28,7 @@
     blacklistTitle: document.createElement("h1"),
     blacklistList: document.createElement("ul"),
 
+    settingsWrapper: document.createElement("section"),
     settingsTitle: document.createElement("h2"),
     settingsInputs: {
       hideFilterCountersAtZero: document.createElement("input")
@@ -85,8 +86,6 @@
     appendBlacklistedElem(blacklistedText);
   });
 
-
-
   /**
    * @template {keyof settings} K
    * @param {K} key 
@@ -98,6 +97,7 @@
   };
 
   elems.settingsTitle.innerText = "Settings:";
+  elems.settingsWrapper.appendChild(elems.settingsTitle);
   const {hideFilterCountersAtZero} = elems.settingsInputs;
 
   hideFilterCountersAtZero.type = "checkbox";
@@ -110,20 +110,20 @@
   const settingsByLabelAndInput = [
     ["Hide filter counters at zero", hideFilterCountersAtZero]
   ];
+  for (const [label, input] of settingsByLabelAndInput) {
+    const wrapper = document.createElement("label");
+    wrapper.innerText = label + ": ";
+    wrapper.appendChild(input);
+    elems.settingsWrapper.appendChild(wrapper);
+  };
 
   for (const element of [
     elems.blacklistedAdditionWrapper,
     elems.blacklistTitle,
     elems.blacklistList,
     document.createElement("hr"),
-    elems.settingsTitle
+    elems.settingsWrapper
   ]) {
     document.body.appendChild(element)
-  };
-  for (const [label, input] of settingsByLabelAndInput) {
-    const wrapper = document.createElement("label");
-    wrapper.innerText = label + ": ";
-    wrapper.appendChild(input);
-    document.body.appendChild(wrapper);
   };
 })();
