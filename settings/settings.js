@@ -21,12 +21,19 @@
 
   /** Elements created in JS for JSdoc/TS type-safety (type-safe refactor suggestions welcome, not a fan of the readability consequences) */
   const elems = {
+    pageWrapper: document.createElement("div"),
+
     blacklistedAdditionWrapper: document.createElement("section"),
     textInput: document.createElement("input"),
     saveButton: document.createElement("button"),
 
     blacklistTitle: document.createElement("h1"),
     blacklistList: document.createElement("ul"),
+
+    blacklistFileLoadWrapper: document.createElement("section"),
+    exportBlacklistButton: document.createElement("button"),
+    importBlacklistInput: document.createElement("input"),
+    importBlacklistLabel: document.createElement("label"), // exists because input[type="file"] can't be styled much 
 
     settingsWrapper: document.createElement("section"),
     settingsTitle: document.createElement("h2"),
@@ -67,6 +74,7 @@
     blacklistedElem.appendChild(textWrapper);
 
     const deletionButton = document.createElement("button");
+    deletionButton.className = "imageButton";
     deletionButton.title = `Delete "${blacklistedText}"`
     deletionButton.innerHTML = '<img src="../assets/trash.svg" alt="Trash icon"/>';
     blacklistedElem.appendChild(deletionButton);
@@ -84,6 +92,66 @@
   };
   blacklist.forEach((blacklistedText) => {
     appendBlacklistedElem(blacklistedText);
+  });
+
+  elems.blacklistFileLoadWrapper.id = "fileLoadWrapper";
+  [elems.exportBlacklistButton, elems.importBlacklistLabel].forEach((elem, index) => {
+    const actionName = !index ? "export" : "import";
+    const capitalizedName = actionName[0].toUpperCase() + actionName.slice(1)
+
+    elem.className = "imageButton";
+    elem.title = capitalizedName + " blacklist";
+    elem.innerHTML = `
+      <img
+        src="../assets/${actionName}.svg"
+        alt="${capitalizedName} icon"
+      />
+    `;
+    elems.blacklistFileLoadWrapper.appendChild(elem);
+  });
+
+  elems.importBlacklistInput.type = "file";
+  elems.importBlacklistInput.accept=".json,text/*";
+  elems.importBlacklistInput.id = "blacklistImport";
+  elems.importBlacklistLabel.setAttribute("for", "blacklistImport");
+  elems.importBlacklistLabel.appendChild(elems.importBlacklistInput);
+  elems.importBlacklistInput.addEventListener("change", async () => {
+    if (!elems.importBlacklistInput.files) return;
+
+    const [file] = elems.importBlacklistInput.files;
+    /** @type {blacklist | undefined} */
+    let importedBlacklist;
+
+    try {
+      importedBlacklist = await JSON.parse(await file.text())
+    } catch {
+      alert("Invalid file format (not JSON)");
+      return;
+    };
+
+    if (
+      !Array.isArray(importedBlacklist) || 
+      !importedBlacklist.every(item => typeof item === "string")
+    ) {
+      alert("Invalid blacklist content (not array of strings)");
+      return;
+    };
+    
+    chrome.storage.sync.set({blacklist: importedBlacklist});
+    blacklist = importedBlacklist;
+    for (let prevElem of elems.blacklistList.children) {prevElem.remove()};
+    importedBlacklist.forEach((blacklistedText) => {
+      appendBlacklistedElem(blacklistedText);
+    });
+  });
+
+  elems.exportBlacklistButton.addEventListener("click", async () => {
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(blacklist)));
+    dlAnchor.setAttribute("download", "blacklist.json");
+    document.body.appendChild(dlAnchor); // required for firefox
+    dlAnchor.click();
+    dlAnchor.remove();
   });
 
   /**
@@ -121,9 +189,11 @@
     elems.blacklistedAdditionWrapper,
     elems.blacklistTitle,
     elems.blacklistList,
+    elems.blacklistFileLoadWrapper,
     document.createElement("hr"),
     elems.settingsWrapper
   ]) {
-    document.body.appendChild(element)
+    elems.pageWrapper.appendChild(element)
   };
+  document.body.appendChild(elems.pageWrapper)
 })();

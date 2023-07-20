@@ -1,13 +1,17 @@
 @import url(/vars.module.css);
 
 body {
-  font-size: 0.35cm; /* for consistency between browsers */
-  min-width: 15em;
-  width: max-content;
-  padding: 0.25em;
+  font-size: 0.5cm; /* for consistency between browsers */
   font-family: Arial;
+  padding: 0.25em;
   background-color: var(--FJF_backgroundColor);
   color: var(--FJF_textColor);
+}
+
+body > div {
+  margin-inline: auto;
+  min-width: 20em;
+  max-width: 40em;
 }
 
 button {
@@ -30,6 +34,7 @@ h1 {
 
 #filterAddition button {
   font-weight: bold;
+  color: var(--FJF_backgroundColor);
   background-color: var(--FJF_textSubColor);
   padding: 0.25em;
   transition: background-color 350ms;
@@ -60,7 +65,6 @@ ul {
   margin: 0;
 }
 
-li {white-space: nowrap}
 li::marker {content: "- "}
 li + li {margin-top: 0.25em}
 
@@ -77,6 +81,7 @@ li pre {
   margin: 0;
   font-family: inherit;
   width: fit-content;
+  white-space: wrap;
 }
 li pre::before, li pre::after {content: '"'}
 
@@ -87,17 +92,39 @@ li::marker, li pre::before, li pre::after {
 li img {
   height: 1.1em;
   vertical-align: middle;
-  filter: opacity(var(--FJF_inactiveOpacity));
-  transition: filter 350ms;
 }
 
-li button:hover img,
-li button:focus img {
-  filter: opacity(1);
+.imageButton img {
+  opacity: var(--FJF_inactiveOpacity);
+  transition: opacity 350ms;
+}
+
+.imageButton:hover img,
+.imageButton:focus img {
+  opacity: 1;
+}
+
+#fileLoadWrapper {
+  margin-top: 0.5em;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+#fileLoadWrapper button,
+#fileLoadWrapper label,
+#fileLoadWrapper img {
+  font-size: inherit;
+  height: 1.4em;
+  width: 1.4em;
+}
+#fileLoadWrapper input[type=file] {display: none}
+#fileLoadWrapper button {
+  background-color: transparent;
 }
 
 hr {
-  margin: 1em 0 1em;
+  margin: 0.5em 0;
 }
 
 h2 {
@@ -110,3 +137,5 @@ label {
   cursor: pointer;
 }
 label input {vertical-align: middle}
+
+label input[type="checkbox"] {cursor: pointer}

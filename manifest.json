@@ -2,15 +2,11 @@
   "name": "Filter Jobs Feeds",
   "description": "A browser extension for filtering jobs feeds by blacklisting text",
   "icons": {"128": "assets/filterJobsFeeds.png"},
-  "version": "1.8.7",
+  "version": "1.9.0",
 
-  "permissions": ["storage"],
-  "options_ui": {
-    "page": "popup/settings.html",
-    "open_in_tab": false
-  },
+  "permissions": ["storage", "tabs"],
   "action": {
-    "default_popup": "popup/settings.html"
+    "default_popup": "settings/opener.html"
   },
 
   "content_scripts": [{
