@@ -1,8 +1,8 @@
 // @ts-check
+/// <reference path="../shared/chrome.d.ts"/>
 
 /** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
-  /** @typedef {import("../shared/chrome.d.ts").chrome} */
   /** @typedef {import("../shared/settings.d.ts").settings} settingsObj */
 
   /** @type {{blacklist?: string[], filtered?: string[], settings?: settingsObj}} */
