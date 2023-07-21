@@ -1,7 +1,7 @@
 @import url(/shared/vars.module.css);
 
 body {
-  font-size: 0.5cm; /* for consistency between browsers */
+  font-size: 1.25em;
   font-family: Arial;
   padding: 0.25em;
   background-color: var(--FJF_backgroundColor);
