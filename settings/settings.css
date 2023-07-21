@@ -47,6 +47,7 @@ h1 {
 
 #filterAddition input {
   flex-grow: 1;
+  font-size: inherit;
   color: inherit;
   background-color: inherit;
   border: 0.1em solid var(--FJF_textSubColor);
