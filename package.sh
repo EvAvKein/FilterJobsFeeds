@@ -1,4 +1,4 @@
 #!/bin/bash
 
 VERSION=$(grep -oP '(?<="version": ")[^"]*' manifest.json)
-zip -r ~/Desktop/filterJobsFeeds_$VERSION.zip . -x .git/\*
+zip -r ~/Desktop/filterJobsFeeds_$VERSION.zip . -x .git/\* package.sh
