@@ -119,7 +119,20 @@ li img {
   height: 1.4em;
   width: 1.4em;
 }
-#fileLoadWrapper input[type=file] {display: none}
+#fileLoadWrapper label {
+  position: relative;
+  background-color: var(--FJF_backgroundColor);
+}
+#fileLoadWrapper input[type=file] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  height: 1px;
+  width: 1px;
+  box-sizing: content-box;
+  padding: 0.95em;
+}
 #fileLoadWrapper button {
   background-color: transparent;
 }
