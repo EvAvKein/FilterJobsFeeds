@@ -1,0 +1,11 @@
+@import url(/shared/vars.module.css);
+
+body {
+  font-family: Arial;
+  background-color: var(--FJF_backgroundColor);
+}
+
+a {
+  font-size: 1.5em;
+  color: var(--FJF_textColor);
+}
