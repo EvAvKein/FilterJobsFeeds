@@ -1,6 +1,6 @@
 Add:
 - Feature for saving custom sites
-- Some form of session-cumulative filter counter (Consider: Lifetime total counter, or per local day, or per session? Segmented by page/site? On/of-by-default, if even toggleable?)
+- Session-cumulative filter counter
 
 Resolve:
 - Manual activation cases
