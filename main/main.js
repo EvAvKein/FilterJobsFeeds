@@ -189,7 +189,7 @@
           };
         };
       });
-      elems.summary.innerText = "Total jobs filtered: " + totalFiltered;
+      elems.summary.innerText = "Jobs filtered: " + totalFiltered;
 
       elems.filterList.replaceWith(elems.filterList = filtersToListElem(filters));
       // ^ i measured and compared this (i.e replacing the entire list) to updating a matched filter's count element upon every match, and replacing the entire list was faster
