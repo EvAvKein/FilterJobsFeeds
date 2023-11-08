@@ -114,12 +114,6 @@
       new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // this page just has some listings from a few popular companies before prompting the user to register, but i'm supporting it on principle. also, wont be surprised if these class suffixes end up changing when they recompile for an update
       new PageData('[data-test="JobSearchResults"]', '[data-test="StartupResult"]', true),
     ]),
-    new SiteData("f6s", [
-      new PageData("#csResultsBlock", ".result-item"),
-    ]),
-    new SiteData("dice", [
-      new PageData("dhi-search-cards-widget", "dhi-search-card"),
-    ]),
   ];
 
   /**
@@ -161,7 +155,7 @@
   async function findPageData(siteData) {
     // If/when making adjustments that affect max testing period:
     // 1. Test on both Firefox & Chrome (former especially, as I can personally attest to its significantly slower load speed on at least one extension-relevant page)
-    // 2. Some good test targets (i.e particularly slow pages) are Dice's page and Wellfound's logged-out page
+    // 2. A good test target (i.e particularly slow page) is Wellfound's logged-out page
     let data;
     for (let i = 0; i < 10; i++) {
       data = queryForPageData(siteData);
