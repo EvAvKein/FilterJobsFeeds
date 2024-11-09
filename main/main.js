@@ -114,8 +114,8 @@
     ]),
     new SiteData("indeed", [
       new PageData(
-        ".jobsearch-ResultsList",
-        ".jobsearch-ResultsList > li",
+        "#mosaic-provider-jobcards",
+        "#mosaic-provider-jobcards > ul > li",
         false,
         "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"
       ), // would've just fixed those quirks if i could sufficiently figure them out. a fix commit would be welcomed
