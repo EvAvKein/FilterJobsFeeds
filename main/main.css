@@ -18,11 +18,17 @@
   border-top-right-radius: 0.5em;
 }
 
-#FJF_JobsFilter * {color: var(--FJF_textColor)}
+#FJF_JobsFilter * {
+  color: var(--FJF_textColor);
+}
 
-#FJF_JobsFilter summary {cursor: pointer}
+#FJF_JobsFilter summary {
+  cursor: pointer;
+}
 
-#FJF_JobsFilter p {margin: 0}
+#FJF_JobsFilter p {
+  margin: 0;
+}
 
 #FJF_JobsFilter p,
 #FJF_JobsFilter ul {
@@ -31,18 +37,22 @@
   margin: 0;
 }
 
-#FJF_JobsFilter li {list-style: none}
+#FJF_JobsFilter li {
+  list-style: none;
+}
 
 #FJF_JobsFilter li.note {
   color: var(--FJF_textSubColor);
   text-align: center;
 }
 
-#FJF_JobsFilter a {color:goldenrod}
+#FJF_JobsFilter a {
+  color: goldenrod;
+}
 #FJF_JobsFilter a:hover,
 #FJF_JobsFilter a:focus,
 #FJF_JobsFilter a:active {
-  color:gold
+  color: gold;
 }
 
 #FJF_JobsFilter button {

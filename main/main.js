@@ -7,15 +7,20 @@
 
   /** @type {{blacklist?: string[], filtered?: string[], settings?: settingsObj}} */
   const storage = await chrome.storage.sync.get([
-    "blacklist", "filtered",
-    "settings"
+    "blacklist",
+    "filtered",
+    "settings",
   ]);
-  if (storage.filtered) { // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
-    await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
+  if (storage.filtered) {
+    // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
+    await chrome.storage.sync.set({
+      blacklist: storage.filtered,
+      filtered: null,
+    });
     storage.blacklist = structuredClone(storage.filtered);
     delete storage.filtered;
-  };
-  
+  }
+
   let blacklist = storage.blacklist ?? [];
   let settings = storage.settings ?? {};
 
@@ -27,11 +32,11 @@
 
   /** @type {Filter[]} */
   let filters = blacklist.map((blacklisted) => {
-    return {blacklisted, removedCount: 0};
+    return { blacklisted, removedCount: 0 };
   });
 
   let totalFiltered = 0;
-  
+
   /** All extension elements, `details` being the outermost wrapper */
   const elems = {
     details: document.createElement("details"),
@@ -51,9 +56,9 @@
    * @param {string} description HTML/text which is only visible when the extension's wrapper is expanded (assigned as HTML to support links e.g support page)
    */
   function setText(summary, description) {
-    elems.summary.innerText = summary; 
+    elems.summary.innerText = summary;
     elems.description.innerHTML = description;
-  };
+  }
 
   /**
    * Converts the provided `Filter` array into an HTML list
@@ -75,7 +80,7 @@
       ul.appendChild(li);
     }
     return ul;
-  };
+  }
 
   class PageData {
     /**
@@ -89,8 +94,8 @@
       this.jobItem = jobItemSelector;
       this.manualStart = manualStart; // created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering MutationObserver is attached. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
       this.disclaimer = disclaimer;
-    };
-  };
+    }
+  }
 
   class SiteData {
     /**
@@ -100,19 +105,28 @@
     constructor(siteName, pagesDataArray) {
       this.name = siteName;
       this.pages = pagesDataArray;
-    };
-  };
+    }
+  }
   const compatibleSites = [
     new SiteData("linkedin", [
       new PageData(".jobs-search__results-list", ".job-search-card"),
       new PageData(".scaffold-layout__list-container", ".job-card-container"),
     ]),
     new SiteData("indeed", [
-      new PageData(".jobsearch-ResultsList", ".jobsearch-ResultsList > li", false, "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"), // would've just fixed those quirks if i could sufficiently figure them out. a fix commit would be welcomed
+      new PageData(
+        ".jobsearch-ResultsList",
+        ".jobsearch-ResultsList > li",
+        false,
+        "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"
+      ), // would've just fixed those quirks if i could sufficiently figure them out. a fix commit would be welcomed
     ]),
     new SiteData("wellfound", [
       new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // this page just has some listings from a few popular companies before prompting the user to register, but i'm supporting it on principle. also, wont be surprised if these class suffixes end up changing when they recompile for an update
-      new PageData('[data-test="JobSearchResults"]', '[data-test="StartupResult"]', true),
+      new PageData(
+        '[data-test="JobSearchResults"]',
+        '[data-test="StartupResult"]',
+        true
+      ),
     ]),
   ];
 
@@ -126,13 +140,13 @@
       if (window.location.hostname.match(siteData.name)) {
         data = siteData;
         break;
-      };
-    };
+      }
+    }
     return data;
-  };
+  }
 
   /**
-   * Queries for compatible `PageData` using the list selector 
+   * Queries for compatible `PageData` using the list selector
    * @param {SiteData} siteData The current site's `SiteData`, from which to query possible `PageData`s
    * @returns {PageData=} `PageData` for the current page (liable to find none, for reasons such as slow loading or site refactors)
    */
@@ -142,10 +156,10 @@
       if (document.querySelector(pageData.jobsList)) {
         data = pageData;
         break;
-      };
-    };
+      }
+    }
     return data;
-  };
+  }
 
   /**
    * Retrieves compatible `PageData` (if any) based on the list selector, by querying it on a interval (to account for varying page-load speeds) with finite attempts
@@ -160,34 +174,39 @@
     for (let i = 0; i < 10; i++) {
       data = queryForPageData(siteData);
       if (data) break;
-      await new Promise(resolve => setTimeout(resolve, 350));
-    };
+      await new Promise((resolve) => setTimeout(resolve, 350));
+    }
     return data;
-  };
+  }
 
-    /**
-     * Deletes any listing element which contains blacklisted text, updating the filter count of that blacklist
-     * @param {PageData} pageData 
-     */
-    function filterListings(pageData) {
-      const allListings = Array.from(document.querySelectorAll(pageData.jobItem));
-    
-      allListings.forEach((listingElem) => {
-        for (const [index, filter] of filters.entries()) {
-          if (listingElem.textContent && listingElem.textContent.includes(filter.blacklisted)) {
-            listingElem.remove();
+  /**
+   * Deletes any listing element which contains blacklisted text, updating the filter count of that blacklist
+   * @param {PageData} pageData
+   */
+  function filterListings(pageData) {
+    const allListings = Array.from(document.querySelectorAll(pageData.jobItem));
 
-            totalFiltered++;
-            filters[index].removedCount++;
-            break;
-          };
-        };
-      });
-      elems.summary.innerText = "Jobs filtered: " + totalFiltered;
+    allListings.forEach((listingElem) => {
+      for (const [index, filter] of filters.entries()) {
+        if (
+          listingElem.textContent &&
+          listingElem.textContent.includes(filter.blacklisted)
+        ) {
+          listingElem.remove();
 
-      elems.filterList.replaceWith(elems.filterList = filtersToListElem(filters));
-      // ^ i measured and compared this (i.e replacing the entire list) to updating a matched filter's count element upon every match, and replacing the entire list was faster
-    };
+          totalFiltered++;
+          filters[index].removedCount++;
+          break;
+        }
+      }
+    });
+    elems.summary.innerText = "Jobs filtered: " + totalFiltered;
+
+    elems.filterList.replaceWith(
+      (elems.filterList = filtersToListElem(filters))
+    );
+    // ^ i measured and compared this (i.e replacing the entire list) to updating a matched filter's count element upon every match, and replacing the entire list was faster
+  }
 
   /**
    * Call the `filterListing` function & set up the `MutationObserver` which'll call it on every change inside the list element
@@ -201,18 +220,16 @@
         'The wrapper used by this extension to detect listing updates can no longer be found. Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL and the steps which led to this problem)'
       );
       return;
-    };
+    }
 
     elems.description.innerText = pageData.disclaimer ?? "";
     filterListings(pageData);
 
-    new MutationObserver(() => 
-      filterListings(pageData)
-    ).observe(
-      jobsList,
-      {childList: true, subtree: true}
-    );
-  };
+    new MutationObserver(() => filterListings(pageData)).observe(jobsList, {
+      childList: true,
+      subtree: true,
+    });
+  }
 
   /** A function containing all the steps for setting up the extension on a given page */
   async function initialize() {
@@ -229,7 +246,7 @@
         'Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)'
       );
       return;
-    };
+    }
 
     if (!blacklist?.length) {
       setText(
@@ -237,7 +254,7 @@
         "Edit your blacklist in the extension settings"
       );
       return;
-    };
+    }
 
     const initOnceReady = new MutationObserver(async () => {
       initOnceReady.disconnect();
@@ -253,12 +270,12 @@
           'Try refreshing the page, and if this error remains please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL & a screenshot)'
         );
         return;
-      };
+      }
 
       if (!pageData.manualStart) {
         startFiltering(pageData);
         return;
-      };
+      }
 
       setText(
         "Activate once you're ready to browse!",
@@ -266,15 +283,19 @@
       );
       const toggleButtonElem = document.createElement("button");
       toggleButtonElem.innerText = "ACTIVATE";
-      toggleButtonElem.addEventListener("click", () => {
-        startFiltering(pageData);
+      toggleButtonElem.addEventListener(
+        "click",
+        () => {
+          startFiltering(pageData);
 
-        toggleButtonElem.remove();
-        elems.details.open = false;
-      }, {once: true});
+          toggleButtonElem.remove();
+          elems.details.open = false;
+        },
+        { once: true }
+      );
       elems.details.appendChild(toggleButtonElem);
     });
-    initOnceReady.observe(document.body, {childList: true, subtree: true});
-  };
+    initOnceReady.observe(document.body, { childList: true, subtree: true });
+  }
   initialize();
 })();

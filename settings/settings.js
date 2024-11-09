@@ -7,14 +7,19 @@
 
   /** @type {{blacklist?: string[], filtered?: string[], settings?: settingsObj}} */
   const storage = await chrome.storage.sync.get([
-    "blacklist", "filtered",
-    "settings"
+    "blacklist",
+    "filtered",
+    "settings",
   ]);
-  if (storage.filtered) { // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
-    await chrome.storage.sync.set({blacklist: storage.filtered, filtered: null});
+  if (storage.filtered) {
+    // "filtered" is the previous key used for blacklist storage, feel free to remove this migration code by 2024
+    await chrome.storage.sync.set({
+      blacklist: storage.filtered,
+      filtered: null,
+    });
     storage.blacklist = structuredClone(storage.filtered);
     delete storage.filtered;
-  };
+  }
 
   let blacklist = storage.blacklist ?? [];
   let settings = storage.settings ?? {};
@@ -33,12 +38,12 @@
     blacklistFileLoadWrapper: document.createElement("section"),
     exportBlacklistButton: document.createElement("button"),
     importBlacklistInput: document.createElement("input"),
-    importBlacklistLabel: document.createElement("label"), // exists because input[type="file"] can't be styled much 
+    importBlacklistLabel: document.createElement("label"), // exists because input[type="file"] can't be styled much
 
     settingsWrapper: document.createElement("section"),
     settingsTitle: document.createElement("h2"),
     settingsInputs: {
-      hideFilterCountersAtZero: document.createElement("input")
+      hideFilterCountersAtZero: document.createElement("input"),
     },
   };
 
@@ -47,11 +52,11 @@
     const newBlacklisted = elems.textInput.value;
     const blacklistAfterAddition = [...blacklist, newBlacklisted];
 
-    chrome.storage.sync.set({blacklist: blacklistAfterAddition});
+    chrome.storage.sync.set({ blacklist: blacklistAfterAddition });
     blacklist = blacklistAfterAddition;
     appendBlacklistedElem(newBlacklisted);
     elems.textInput.value = "";
-  };
+  }
   elems.saveButton.innerText = "Add";
   elems.saveButton.addEventListener("click", saveBlacklistItem);
   elems.textInput.addEventListener("keyup", (event) => {
@@ -69,49 +74,58 @@
    */
   function appendBlacklistedElem(blacklistedText) {
     const blacklistedElem = document.createElement("li");
-    const textWrapper = document.createElement("pre"); 
+    const textWrapper = document.createElement("pre");
     textWrapper.innerText = blacklistedText;
     blacklistedElem.appendChild(textWrapper);
 
     const deletionButton = document.createElement("button");
     deletionButton.className = "imageButton";
-    deletionButton.title = `Delete "${blacklistedText}"`
-    deletionButton.innerHTML = '<img src="../assets/trash.svg" alt="Trash icon"/>';
+    deletionButton.title = `Delete "${blacklistedText}"`;
+    deletionButton.innerHTML =
+      '<img src="../assets/trash.svg" alt="Trash icon"/>';
     blacklistedElem.appendChild(deletionButton);
 
-    deletionButton.addEventListener("click", function deleteBlacklisting() {
-      const blacklistAfterDeletion = blacklist.filter((blacklisted) => blacklisted !== blacklistedText);
+    deletionButton.addEventListener(
+      "click",
+      function deleteBlacklisting() {
+        const blacklistAfterDeletion = blacklist.filter(
+          (blacklisted) => blacklisted !== blacklistedText
+        );
 
-      chrome.storage.sync.set({blacklist: blacklistAfterDeletion});
-      blacklist = blacklistAfterDeletion;
+        chrome.storage.sync.set({ blacklist: blacklistAfterDeletion });
+        blacklist = blacklistAfterDeletion;
 
-      blacklistedElem.remove();
-    }, {once: true});
+        blacklistedElem.remove();
+      },
+      { once: true }
+    );
 
     elems.blacklistList.appendChild(blacklistedElem);
-  };
+  }
   blacklist.forEach((blacklistedText) => {
     appendBlacklistedElem(blacklistedText);
   });
 
   elems.blacklistFileLoadWrapper.id = "fileLoadWrapper";
-  [elems.exportBlacklistButton, elems.importBlacklistLabel].forEach((elem, index) => {
-    const actionName = !index ? "export" : "import";
-    const capitalizedName = actionName[0].toUpperCase() + actionName.slice(1)
+  [elems.exportBlacklistButton, elems.importBlacklistLabel].forEach(
+    (elem, index) => {
+      const actionName = !index ? "export" : "import";
+      const capitalizedName = actionName[0].toUpperCase() + actionName.slice(1);
 
-    elem.className = "imageButton";
-    elem.title = capitalizedName + " blacklist";
-    elem.innerHTML = `
+      elem.className = "imageButton";
+      elem.title = capitalizedName + " blacklist";
+      elem.innerHTML = `
       <img
         src="../assets/${actionName}.svg"
         alt="${capitalizedName} icon"
       />
     `;
-    elems.blacklistFileLoadWrapper.appendChild(elem);
-  });
+      elems.blacklistFileLoadWrapper.appendChild(elem);
+    }
+  );
 
   elems.importBlacklistInput.type = "file";
-  elems.importBlacklistInput.accept=".json,text/*";
+  elems.importBlacklistInput.accept = ".json,text/*";
   elems.importBlacklistInput.id = "blacklistImport";
   elems.importBlacklistLabel.setAttribute("for", "blacklistImport");
   elems.importBlacklistLabel.appendChild(elems.importBlacklistInput);
@@ -123,31 +137,37 @@
     let importedBlacklist;
 
     try {
-      importedBlacklist = await JSON.parse(await file.text())
+      importedBlacklist = await JSON.parse(await file.text());
     } catch {
       alert("Invalid file format (not JSON)");
       return;
-    };
+    }
 
     if (
-      !Array.isArray(importedBlacklist) || 
-      !importedBlacklist.every(item => typeof item === "string")
+      !Array.isArray(importedBlacklist) ||
+      !importedBlacklist.every((item) => typeof item === "string")
     ) {
       alert("Invalid blacklist content (not array of strings)");
       return;
-    };
-    
-    chrome.storage.sync.set({blacklist: importedBlacklist});
+    }
+
+    chrome.storage.sync.set({ blacklist: importedBlacklist });
     blacklist = importedBlacklist;
-    for (let prevElem of elems.blacklistList.children) {prevElem.remove()};
+    for (let prevElem of elems.blacklistList.children) {
+      prevElem.remove();
+    }
     importedBlacklist.forEach((blacklistedText) => {
       appendBlacklistedElem(blacklistedText);
     });
   });
 
   elems.exportBlacklistButton.addEventListener("click", async () => {
-    const dlAnchor = document.createElement('a');
-    dlAnchor.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(blacklist)));
+    const dlAnchor = document.createElement("a");
+    dlAnchor.setAttribute(
+      "href",
+      "data:text/json;charset=utf-8," +
+        encodeURIComponent(JSON.stringify(blacklist))
+    );
     dlAnchor.setAttribute("download", "blacklist.json");
     document.body.appendChild(dlAnchor); // required for firefox
     dlAnchor.click();
@@ -156,34 +176,37 @@
 
   /**
    * @template {keyof settings} K
-   * @param {K} key 
-   * @param {settings[K]|false|undefined} value 
+   * @param {K} key
+   * @param {settings[K]|false|undefined} value
    */
   function saveSettingChange(key, value) {
-    value ? settings[key] = value : delete settings[key];
-    chrome.storage.sync.set({settings});
-  };
+    value ? (settings[key] = value) : delete settings[key];
+    chrome.storage.sync.set({ settings });
+  }
 
   elems.settingsTitle.innerText = "Settings:";
   elems.settingsWrapper.appendChild(elems.settingsTitle);
-  const {hideFilterCountersAtZero} = elems.settingsInputs;
+  const { hideFilterCountersAtZero } = elems.settingsInputs;
 
   hideFilterCountersAtZero.type = "checkbox";
   hideFilterCountersAtZero.checked = settings.hideFilterCountersAtZero || false;
   hideFilterCountersAtZero.addEventListener("input", () => {
-    saveSettingChange("hideFilterCountersAtZero", Boolean(hideFilterCountersAtZero.checked));
+    saveSettingChange(
+      "hideFilterCountersAtZero",
+      Boolean(hideFilterCountersAtZero.checked)
+    );
   });
 
   /** @type {[string, HTMLElement][]} */
   const settingsByLabelAndInput = [
-    ["Hide filter counters at zero", hideFilterCountersAtZero]
+    ["Hide filter counters at zero", hideFilterCountersAtZero],
   ];
   for (const [label, input] of settingsByLabelAndInput) {
     const wrapper = document.createElement("label");
     wrapper.innerText = label + ": ";
     wrapper.appendChild(input);
     elems.settingsWrapper.appendChild(wrapper);
-  };
+  }
 
   for (const element of [
     elems.blacklistedAdditionWrapper,
@@ -191,9 +214,9 @@
     elems.blacklistList,
     elems.blacklistFileLoadWrapper,
     document.createElement("hr"),
-    elems.settingsWrapper
+    elems.settingsWrapper,
   ]) {
-    elems.pageWrapper.appendChild(element)
-  };
-  document.body.appendChild(elems.pageWrapper)
+    elems.pageWrapper.appendChild(element);
+  }
+  document.body.appendChild(elems.pageWrapper);
 })();

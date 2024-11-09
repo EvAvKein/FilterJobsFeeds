@@ -66,10 +66,17 @@ ul {
   margin: 0;
 }
 
-li::marker {content: "- "}
-li + li {margin-top: 0.25em}
+li::marker {
+  content: "- ";
+}
+li + li {
+  margin-top: 0.25em;
+}
 
-li button, li img {vertical-align: middle}
+li button,
+li img {
+  vertical-align: middle;
+}
 
 li button {
   float: right;
@@ -84,9 +91,14 @@ li pre {
   width: fit-content;
   white-space: wrap;
 }
-li pre::before, li pre::after {content: '"'}
+li pre::before,
+li pre::after {
+  content: '"';
+}
 
-li::marker, li pre::before, li pre::after {
+li::marker,
+li pre::before,
+li pre::after {
   color: var(--FJF_textSubColor);
 }
 
@@ -123,7 +135,7 @@ li img {
   position: relative;
   background-color: var(--FJF_backgroundColor);
 }
-#fileLoadWrapper input[type=file] {
+#fileLoadWrapper input[type="file"] {
   position: absolute;
   top: 0;
   left: 0;
@@ -150,6 +162,10 @@ label {
   font-size: 1.1em;
   cursor: pointer;
 }
-label input {vertical-align: middle}
+label input {
+  vertical-align: middle;
+}
 
-label input[type="checkbox"] {cursor: pointer}
+label input[type="checkbox"] {
+  cursor: pointer;
+}

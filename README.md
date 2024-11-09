@@ -25,4 +25,5 @@ Regarding stuff in the TODO.md file, you have the go-ahead to submit a pull requ
 ---
 
 ## License
+
 This project is under the MIT License - see the LICENSE.md file for details.
