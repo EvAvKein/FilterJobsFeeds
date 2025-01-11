@@ -24,7 +24,7 @@
   let blacklist = storage.blacklist ?? [];
   let settings = storage.settings ?? {};
 
-  /** Elements created in JS for JSdoc/TS type-safety (type-safe refactor suggestions welcome, not a fan of the readability consequences) */
+  /** Elements are made with createElement for JSdoc/TS type-safety (type-safe refactor ideas welcome, not a fan of the current readability consequences) */
   const elems = {
     pageWrapper: document.createElement("div"),
 
@@ -38,7 +38,7 @@
     blacklistFileLoadWrapper: document.createElement("section"),
     exportBlacklistButton: document.createElement("button"),
     importBlacklistInput: document.createElement("input"),
-    importBlacklistLabel: document.createElement("label"), // exists because input[type="file"] can't be styled much
+    importBlacklistLabel: document.createElement("label"), // Using a label wrapper because input[type="file"] can't be styled much
 
     settingsWrapper: document.createElement("section"),
     settingsTitle: document.createElement("h2"),
@@ -169,7 +169,7 @@
         encodeURIComponent(JSON.stringify(blacklist))
     );
     dlAnchor.setAttribute("download", "blacklist.json");
-    document.body.appendChild(dlAnchor); // required for firefox
+    document.body.appendChild(dlAnchor); // Required for firefox
     dlAnchor.click();
     dlAnchor.remove();
   });

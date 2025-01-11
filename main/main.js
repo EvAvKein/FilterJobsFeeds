@@ -51,9 +51,9 @@
   elems.details.appendChild(elems.description);
 
   /**
-   * Shorthand for setting the extension's page element's summary text and description HTML/text
+   * Helper to set the extension element's summary text and description
    * @param {string} summary Text which is visible regardless of whether the extension's wrapper is expanded or collapsed
-   * @param {string} description HTML/text which is only visible when the extension's wrapper is expanded (assigned as HTML to support links e.g support page)
+   * @param {string} description Text/HTML which is only visible when the extension's wrapper is expanded (assigned as HTML to support links e.g. support page)
    */
   function setText(summary, description) {
     elems.summary.innerText = summary;
@@ -85,14 +85,14 @@
   class PageData {
     /**
      * @param {string} jobsListSelector The selector for this page's wrapper for job listings. To be watched with a `MutationObserver`
-     * @param {string} jobItemSelector The selector for this page's job listings. To be queried and iterated through on initial load and further list mutations
+     * @param {string} jobItemSelector The selector for this page's job listings. To be queried and iterated on initial load and list mutations
      * @param {boolean=} manualStart Whether to withhold filtering on this page until the user confirms they're done editing sort/search functionalities (due to unknown/irreconcilable conflicts between extension and site behavior)
      * @param {string=} disclaimer Disclaimer text to be displayed under the filters list
      */
     constructor(jobsListSelector, jobItemSelector, manualStart, disclaimer) {
       this.jobsList = jobsListSelector;
       this.jobItem = jobItemSelector;
-      this.manualStart = manualStart; // created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering MutationObserver is attached. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with nextJS's SPA mechanisms
+      this.manualStart = manualStart; // Created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering MutationObserver is attached. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with NextJS's SPA mechanisms
       this.disclaimer = disclaimer;
     }
   }
@@ -100,7 +100,7 @@
   class SiteData {
     /**
      * @param {string} siteName The website's name, as it appears in its FQDN
-     * @param {PageData[]} pagesDataArray `PageData` for various job pages under this domains (e.g logged out, logged in)
+     * @param {PageData[]} pagesDataArray `PageData` for the job pages under this domain (e.g. logged out, logged in)
      */
     constructor(siteName, pagesDataArray) {
       this.name = siteName;
@@ -118,10 +118,10 @@
         "#mosaic-provider-jobcards > ul > li",
         false,
         "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"
-      ), // would've just fixed those quirks if i could sufficiently figure them out. a fix commit would be welcomed
+      ), // Would've fixed those quirks if I could sufficiently figure them out. A fix commit would be welcomed!
     ]),
     new SiteData("wellfound", [
-      new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // this page just has some listings from a few popular companies before prompting the user to register, but i'm supporting it on principle. also, wont be surprised if these class suffixes end up changing when they recompile for an update
+      new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // This page just has some listings from a few popular companies before prompting the user to register. I'm supporting it for now, but won't be surprised if these class suffixes change when they recompile for an update
       new PageData(
         '[data-test="JobSearchResults"]',
         '[data-test="StartupResult"]',
@@ -132,7 +132,7 @@
 
   /**
    * Retrieves compatible `SiteData` (if any) based on the current URL's FQDN
-   * @returns {SiteData=} `SiteData` for current site (if found, which is predominantly the case)
+   * @returns {SiteData=} `SiteData` for current site, or `undefined` if there isn't any for the current site
    */
   function findSiteData() {
     let data;
@@ -148,7 +148,7 @@
   /**
    * Queries for compatible `PageData` using the list selector
    * @param {SiteData} siteData The current site's `SiteData`, from which to query possible `PageData`s
-   * @returns {PageData=} `PageData` for the current page (liable to find none, for reasons such as slow loading or site refactors)
+   * @returns {PageData=} `PageData` for the current page (liable to find none, e.g. due to slow loading or site changes)
    */
   function queryForPageData(siteData) {
     let data;
@@ -163,13 +163,13 @@
 
   /**
    * Retrieves compatible `PageData` (if any) based on the list selector, by querying it on a interval (to account for varying page-load speeds) with finite attempts
-   * @param {SiteData} siteData The current site's `SiteData`, from which to query possible `PageData`s
-   * @returns {Promise<PageData|undefined>} `PageData` for the current page (liable to find none, for reasons such as slow loading or site refactors)
+   * @param {SiteData} siteData The current site's `SiteData`, from which to query for possible `PageData`s
+   * @returns {Promise<PageData|undefined>} `PageData` for the current page (liable to find none, e.g. due to slow loading or site updates)
    */
   async function findPageData(siteData) {
-    // If/when making adjustments that affect max testing period:
-    // 1. Test on both Firefox & Chrome (former especially, as I can personally attest to its significantly slower load speed on at least one extension-relevant page)
-    // 2. A good test target (i.e particularly slow page) is Wellfound's logged-out page
+    // If/when changing the max testing period:
+    // 1. Test on both Firefox & Chrome (former especially, it's been significantly slower on at least one relevant page)
+    // 2. A particularly slow page is Wellfound's logged-out page
     let data;
     for (let i = 0; i < 10; i++) {
       data = queryForPageData(siteData);
@@ -205,7 +205,7 @@
     elems.filterList.replaceWith(
       (elems.filterList = filtersToListElem(filters))
     );
-    // ^ i measured and compared this (i.e replacing the entire list) to updating a matched filter's count element upon every match, and replacing the entire list was faster
+    // ^ I measure this and compared it to updating a specific filter's count element when there's a match... and replacing the entire list was faster!
   }
 
   /**
