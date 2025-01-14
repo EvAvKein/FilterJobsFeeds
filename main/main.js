@@ -109,8 +109,10 @@
   }
   const compatibleSites = [
     new SiteData("linkedin", [
-      new PageData(".jobs-search__results-list", ".job-search-card"),
-      new PageData(".scaffold-layout__list-container", ".job-card-container"),
+      new PageData(
+        "div[data-results-list-top-scroll-sentinel] + ul",
+        "div[data-results-list-top-scroll-sentinel] + ul > li"
+      ),
     ]),
     new SiteData("indeed", [
       new PageData(
