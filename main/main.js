@@ -1,7 +1,7 @@
 // @ts-check
 /// <reference path="../shared/chrome.d.ts"/>
 
-/** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks that they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
+/** Wrapper function for isolating scope, as otherwise extension scripts run in a shared scope (or at least the type-checker thinks they do) causing some undesirable cross-file variable borrowing/duplicate-flagging */
 (async () => {
   /** @typedef {import("../shared/settings.d.ts").settings} settingsObj */
 
@@ -120,7 +120,7 @@
         "#mosaic-provider-jobcards > ul > li",
         false,
         "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"
-      ), // Would've fixed those quirks if I could sufficiently figure them out. A fix commit would be welcomed!
+      ), // I would've fixed those quirks if I could sufficiently figure them out. A fix commit would be welcomed!
     ]),
     new SiteData("wellfound", [
       new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // This page just has some listings from a few popular companies before prompting the user to register. I'm supporting it for now, but won't be surprised if these class suffixes change when they recompile for an update
@@ -207,7 +207,7 @@
     elems.filterList.replaceWith(
       (elems.filterList = filtersToListElem(filters))
     );
-    // ^ I measure this and compared it to updating a specific filter's count element when there's a match... and replacing the entire list was faster!
+    // ^ I measured this and compared it to updating a specific filter's count element when there's a match... and replacing the entire list was faster!
   }
 
   /**
