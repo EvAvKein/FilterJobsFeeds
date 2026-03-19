@@ -35,6 +35,12 @@
     return { blacklisted, removedCount: 0 };
   });
 
+  /** The document being filtered. This is not always window.document, as LinkedIn puts the entire jobs page in an iframe when SPA-navigating to it from another page */
+  let filteringDoc = window.document;
+
+  /** Whether the page is being processed. This boolean ensures that regardless of the amount of page mutations (MutationObserver) that result in a filterable page, only a single instance of the filtering logic will execute */
+  let pageEngaged = false;
+
   let totalFiltered = 0;
 
   /** All extension elements, `details` being the outermost wrapper */
@@ -84,12 +90,20 @@
 
   class PageData {
     /**
+     * @param {string} urlPattern A regular express matching the URL which the page data belongs to
      * @param {string} jobsListSelector The selector for this page's wrapper for job listings. To be watched with a `MutationObserver`
      * @param {string} jobItemSelector The selector for this page's job listings. To be queried and iterated on initial load and list mutations
      * @param {boolean=} manualStart Whether to withhold filtering on this page until the user confirms they're done editing sort/search functionalities (due to unknown/irreconcilable conflicts between extension and site behavior)
      * @param {string=} disclaimer Disclaimer text to be displayed under the filters list
      */
-    constructor(jobsListSelector, jobItemSelector, manualStart, disclaimer) {
+    constructor(
+      urlPattern,
+      jobsListSelector,
+      jobItemSelector,
+      manualStart,
+      disclaimer,
+    ) {
+      this.urlStart = urlPattern;
       this.jobsList = jobsListSelector;
       this.jobItem = jobItemSelector;
       this.manualStart = manualStart; // Created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering MutationObserver is attached. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with NextJS's SPA mechanisms
@@ -110,24 +124,22 @@
   const compatibleSites = [
     new SiteData("linkedin", [
       new PageData(
+        "^https://www.linkedin.com/jobs*",
         "div[data-results-list-top-scroll-sentinel] + ul",
-        "div[data-results-list-top-scroll-sentinel] + ul > li"
+        "div[data-results-list-top-scroll-sentinel] + ul > li",
       ),
     ]),
-    new SiteData("indeed", [
-      new PageData(
-        "#mosaic-provider-jobcards",
-        "#mosaic-provider-jobcards > ul > li",
-        false,
-        "(Due to conflicts with site architecture, listings are liable to have minor rendering quirks)"
-      ), // I would've fixed those quirks if I could sufficiently figure them out. A fix commit would be welcomed!
-    ]),
     new SiteData("wellfound", [
-      new PageData(".styles_results__ZQhDf", ".styles_result__rPRNG"), // This page just has some listings from a few popular companies before prompting the user to register. I'm supporting it for now, but won't be surprised if these class suffixes change when they recompile for an update
       new PageData(
+        "^https://wellfound.com/jobs*",
+        ".styles_results__ZQhDf",
+        ".styles_result__rPRNG",
+      ), // This page just has some listings from a few popular companies before prompting the user to register. I'm supporting it for now, but won't be surprised if these class suffixes change when they recompile for an update
+      new PageData(
+        "^https://wellfound.com/jobs*",
         '[data-test="JobSearchResults"]',
         '[data-test="StartupResult"]',
-        true
+        true,
       ),
     ]),
   ];
@@ -155,29 +167,20 @@
   function queryForPageData(siteData) {
     let data;
     for (const pageData of siteData.pages) {
-      if (document.querySelector(pageData.jobsList)) {
+      if (filteringDoc?.querySelector(pageData.jobsList)) {
         data = pageData;
         break;
       }
+      for (const nestedDoc of filteringDoc?.querySelectorAll("iframe")) {
+        if (nestedDoc.contentDocument?.querySelector(pageData.jobsList)) {
+          filteringDoc = nestedDoc.contentDocument;
+          data = pageData;
+          break;
+        }
+      }
     }
-    return data;
-  }
-
-  /**
-   * Retrieves compatible `PageData` (if any) based on the list selector, by querying it on a interval (to account for varying page-load speeds) with finite attempts
-   * @param {SiteData} siteData The current site's `SiteData`, from which to query for possible `PageData`s
-   * @returns {Promise<PageData|undefined>} `PageData` for the current page (liable to find none, e.g. due to slow loading or site updates)
-   */
-  async function findPageData(siteData) {
-    // If/when changing the max testing period:
-    // 1. Test on both Firefox & Chrome (former especially, it's been significantly slower on at least one relevant page)
-    // 2. A particularly slow page is Wellfound's logged-out page
-    let data;
-    for (let i = 0; i < 10; i++) {
-      data = queryForPageData(siteData);
-      if (data) break;
-      await new Promise((resolve) => setTimeout(resolve, 350));
-    }
+    if (!data && filteringDoc !== window.document)
+      filteringDoc = window.document;
     return data;
   }
 
@@ -186,7 +189,9 @@
    * @param {PageData} pageData
    */
   function filterListings(pageData) {
-    const allListings = Array.from(document.querySelectorAll(pageData.jobItem));
+    const allListings = Array.from(
+      filteringDoc.querySelectorAll(pageData.jobItem),
+    );
 
     allListings.forEach((listingElem) => {
       for (const [index, filter] of filters.entries()) {
@@ -204,9 +209,7 @@
     });
     elems.summary.innerText = "Jobs filtered: " + totalFiltered;
 
-    elems.filterList.replaceWith(
-      (elems.filterList = filtersToListElem(filters))
-    );
+    elems.filterList.replaceWith(filtersToListElem(filters));
     // ^ I measured this and compared it to updating a specific filter's count element when there's a match... and replacing the entire list was faster!
   }
 
@@ -215,11 +218,11 @@
    * @param {PageData} pageData
    */
   function startFiltering(pageData) {
-    const jobsList = document.querySelector(pageData.jobsList);
+    const jobsList = filteringDoc.querySelector(pageData.jobsList);
     if (!jobsList) {
       setText(
-        "Error: Failed to find page's jobs list",
-        'The wrapper used by this extension to detect listing updates can no longer be found. Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL and the steps which led to this problem)'
+        "Error: Failed to find detected jobs list",
+        'The extension found a filterable jobs list, but it disappeared when attempting to start filtering. Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL and the steps which led to this problem)',
       );
       return;
     }
@@ -233,71 +236,78 @@
     });
   }
 
-  /** A function containing all the steps for setting up the extension on a given page */
-  async function initialize() {
+  /**
+   * Sets up a `MutationObserver` to watch for the page's list element (in case of slow loading or SPA navigation), and initializes the extension functionality once it's found
+   * @param {SiteData} siteData
+   */
+  async function observeForFilterablePage(siteData) {
+    new MutationObserver(async () => {
+      for (let i = 0; i < 10; i++) {
+        const filterablePageData = queryForPageData(siteData);
+        if (filterablePageData) {
+          if (pageEngaged) return;
+          pageEngaged = true;
+          initVisibleFunctionality(filterablePageData);
+          return;
+        } else if (window.document.contains(elems.details)) {
+          elems.details.parentElement?.removeChild(elems.details);
+          filteringDoc = window.document;
+          pageEngaged = false;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
+    }).observe(window.document, { childList: true, subtree: true });
+  }
+
+  /**
+   * Initializes the extension, setting up it's on-page element and starting the filtering functionality
+   * @param {PageData} pageData
+   */
+  function initVisibleFunctionality(pageData) {
     setText(
       "Loading...",
-      'If you have time to read this, the current website is likely monopolizing script execution. If this issue doesn\'t resolve itself within 1-2 minutes, please report it at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)'
+      'If you have time to read this, the current website is likely monopolizing script execution. If this issue doesn\'t resolve itself within 1-2 minutes, please report it at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)',
     );
-    document.body.appendChild(elems.details);
-
-    const siteData = findSiteData();
-    if (!siteData) {
-      setText(
-        "Error: Failed to load specs for this site",
-        'Please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL)'
-      );
-      return;
-    }
+    window.document.body.appendChild(elems.details);
 
     if (!blacklist?.length) {
       setText(
         "Blacklist is empty!",
-        "Edit your blacklist in the extension settings"
+        "Edit your blacklist in the extension settings",
       );
       return;
     }
 
-    const initOnceReady = new MutationObserver(async () => {
-      initOnceReady.disconnect();
-      setText(
-        "Searching for page specs...",
-        'If this message persists, please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a>'
-      );
+    if (!pageData.manualStart) {
+      startFiltering(pageData);
+      return;
+    }
 
-      const pageData = await findPageData(siteData);
-      if (!pageData) {
-        setText(
-          "Error: Failed to load specs for this page",
-          'Try refreshing the page, and if this error remains please report this at <a href="https://github.com/EvAvKein/FilterJobsFeeds/issues/new">the extension support page</a> (with the page URL & a screenshot)'
-        );
-        return;
-      }
-
-      if (!pageData.manualStart) {
+    setText(
+      "Activate once you're ready to browse!",
+      "Manual activation is required due to conflicts with search/sort functionalities, so first make sure you're done editing those!",
+    );
+    const toggleButtonElem = document.createElement("button");
+    toggleButtonElem.innerText = "ACTIVATE";
+    toggleButtonElem.addEventListener(
+      "click",
+      () => {
         startFiltering(pageData);
-        return;
-      }
 
-      setText(
-        "Activate once you're ready to browse!",
-        "Manual activation is required due to conflicts with search/sort functionalities, so first make sure you're done editing those!"
-      );
-      const toggleButtonElem = document.createElement("button");
-      toggleButtonElem.innerText = "ACTIVATE";
-      toggleButtonElem.addEventListener(
-        "click",
-        () => {
-          startFiltering(pageData);
-
-          toggleButtonElem.remove();
-          elems.details.open = false;
-        },
-        { once: true }
-      );
-      elems.details.appendChild(toggleButtonElem);
-    });
-    initOnceReady.observe(document.body, { childList: true, subtree: true });
+        toggleButtonElem.remove();
+        elems.details.open = false;
+      },
+      { once: true },
+    );
+    elems.details.appendChild(toggleButtonElem);
   }
-  initialize();
+
+  const siteData = findSiteData();
+  if (!siteData) {
+    console.error(
+      "Error: Filter Jobs Feeds extension is enabled on an incompatible website. This shouldn't happen",
+    );
+    return;
+  }
+  observeForFilterablePage(siteData);
 })();

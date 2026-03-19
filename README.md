@@ -5,7 +5,9 @@ A browser extension for filtering jobs feeds by blacklisting text!
 Add any text to your blacklist at the extension settings.
 Every time a compatible page's list loads or updates, the extension will delete any listing which includes any blacklisted text.
 
-Currently compatible with: LinkedIn, Indeed, Wellfound
+Currently compatible with: LinkedIn, Wellfound.
+Previously compatible with: Indeed.
+This project is open to supporting more sites - if you'd like this extension to support another site, suggest it by opening an [issue](https://github.com/EvAvKein/FilterJobsFeeds/issues)!
 
 <a href="https://chrome.google.com/webstore/detail/filter-jobs-feeds/edebgnaafidhaiepkjknfmdonoagkjhe">
   <img src="assets/storeIcons/chrome.png" alt="Available in Chrome Web Store" height="35"/>
