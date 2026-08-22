@@ -90,20 +90,17 @@
 
   class PageData {
     /**
-     * @param {string} urlPattern A regular express matching the URL which the page data belongs to
      * @param {string} jobsListSelector The selector for this page's wrapper for job listings. To be watched with a `MutationObserver`
      * @param {string} jobItemSelector The selector for this page's job listings. To be queried and iterated on initial load and list mutations
      * @param {boolean=} manualStart Whether to withhold filtering on this page until the user confirms they're done editing sort/search functionalities (due to unknown/irreconcilable conflicts between extension and site behavior)
      * @param {string=} disclaimer Disclaimer text to be displayed under the filters list
      */
     constructor(
-      urlPattern,
       jobsListSelector,
       jobItemSelector,
       manualStart,
       disclaimer,
     ) {
-      this.urlStart = urlPattern;
       this.jobsList = jobsListSelector;
       this.jobItem = jobItemSelector;
       this.manualStart = manualStart; // Created due to Wellfound throwing a 404 with a bunch of console errors when changing sort/filter options after the filtering MutationObserver is attached. Wellfound uses NextJS, and my best guess is that the incompatibility has something to do with NextJS's SPA mechanisms
@@ -124,19 +121,16 @@
   const compatibleSites = [
     new SiteData("linkedin", [
       new PageData(
-        "^https://www.linkedin.com/jobs*",
         "div[data-results-list-top-scroll-sentinel] + ul",
         "div[data-results-list-top-scroll-sentinel] + ul > li",
       ),
     ]),
     new SiteData("wellfound", [
       new PageData(
-        "^https://wellfound.com/jobs*",
         ".styles_results__ZQhDf",
         ".styles_result__rPRNG",
       ), // This page just has some listings from a few popular companies before prompting the user to register. I'm supporting it for now, but won't be surprised if these class suffixes change when they recompile for an update
       new PageData(
-        "^https://wellfound.com/jobs*",
         '[data-test="JobSearchResults"]',
         '[data-test="StartupResult"]',
         true,
