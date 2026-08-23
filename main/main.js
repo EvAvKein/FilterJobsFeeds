@@ -27,7 +27,7 @@
   /**
    * @typedef {Object} Filter
    * @property {string} blacklisted The blacklisted text
-   * @property {number} removedCount The amount of times (in this page load) that this filter's `string` was matched and prompted a listing's removal
+   * @property {number} removedCount The amount of times (in this session/execution) that this filter's `string` was matched and prompted a listing's removal
    */
 
   /** @type {Filter[]} */
