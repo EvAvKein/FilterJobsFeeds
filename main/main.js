@@ -204,7 +204,9 @@
     });
     elems.summary.innerText = "Jobs filtered: " + totalFiltered;
 
-    elems.filterList.replaceWith(filtersToListElem(filters));
+    const updatedList = filtersToListElem(filters);
+    elems.filterList.replaceWith(updatedList);
+    elems.filterList = updatedList;
     // ^ I measured this and compared it to updating a specific filter's count element when there's a match... and replacing the entire list was faster!
   }
 
