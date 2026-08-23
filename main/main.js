@@ -163,23 +163,20 @@
    * @returns {PageData=} `PageData` for the current page (liable to find none, e.g. due to slow loading or site changes)
    */
   function queryForPageData(siteData) {
-    let data;
     for (const pageData of siteData.pages) {
-      if (filteringDoc?.querySelector(pageData.jobsList)) {
-        data = pageData;
-        break;
+      if (filteringDoc.querySelector(pageData.jobsList)) {
+        return pageData;
       }
-      for (const nestedDoc of filteringDoc?.querySelectorAll("iframe")) {
+      for (const nestedDoc of filteringDoc.querySelectorAll("iframe")) {
         if (nestedDoc.contentDocument?.querySelector(pageData.jobsList)) {
           filteringDoc = nestedDoc.contentDocument;
-          data = pageData;
-          break;
+          return pageData;
         }
       }
     }
-    if (!data && filteringDoc !== window.document)
-      filteringDoc = window.document;
-    return data;
+
+    filteringDoc = window.document;
+    return undefined;
   }
 
   /**
