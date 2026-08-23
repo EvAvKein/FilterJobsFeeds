@@ -188,6 +188,8 @@
       filteringDoc.querySelectorAll(pageData.jobItem),
     );
 
+    const totalFilteredBefore = totalFiltered;
+
     allListings.forEach((listingElem) => {
       for (const [index, filter] of filters.entries()) {
         if (
@@ -202,7 +204,9 @@
         }
       }
     });
-    elems.summary.innerText = "Jobs filtered: " + totalFiltered;
+    elems.summary.innerText = "Jobs filtered: " + totalFiltered; // Writing the filtered count ahead of the no-new-filters return for the initial case (0 filtered yet)
+
+    if (totalFilteredBefore === totalFiltered) return;
 
     const updatedList = filtersToListElem(filters);
     elems.filterList.replaceWith(updatedList);
