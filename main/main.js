@@ -38,6 +38,12 @@
   /** The document being filtered. This is not always window.document, as LinkedIn puts the entire jobs page in an iframe when SPA-navigating to it from another page */
   let filteringDoc = window.document;
 
+  /**
+   * The observer watching a jobs list. To be cleaned up when a different list is found.
+   * @type {MutationObserver=}
+   */
+  let listObserver;
+
   /** Whether we're currently polling for a filterable page. Tells excess polls created by MutationObserver converge */
   let polling = false;
 
@@ -238,9 +244,11 @@
     }
 
     elems.description.innerText = pageData.disclaimer ?? "";
-    filterListings(pageData);
+    listObserver?.disconnect();
 
-    new MutationObserver(() => filterListings(pageData)).observe(jobsList, {
+    filterListings(pageData);
+    listObserver = new MutationObserver(() => filterListings(pageData));
+    listObserver.observe(jobsList, {
       childList: true,
       subtree: true,
     });
@@ -274,6 +282,8 @@
 
       if (window.document.contains(elems.details)) {
         elems.details.parentElement?.removeChild(elems.details);
+        listObserver?.disconnect();
+        listObserver = undefined;
         filteringDoc = window.document;
       }
 
