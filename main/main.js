@@ -300,6 +300,8 @@
   function observeForFilterablePage(siteData) {
     new MutationObserver(() => pollForFilterablePage(siteData))
       .observe(window.document, { childList: true, subtree: true });
+
+    pollForFilterablePage(siteData); // An initial poll, for a page that'd finished mutating before this script runs (e.g. SSR)
   }
 
   /**
