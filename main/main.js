@@ -121,6 +121,10 @@
   const compatibleSites = [
     new SiteData("linkedin", [
       new PageData(
+        "[componentKey=\"SearchResultsMainContent\"]",
+        "[componentKey*=\"job-card-component\"]",
+      ),
+      new PageData(
         "div[data-results-list-top-scroll-sentinel] + ul",
         "div[data-results-list-top-scroll-sentinel] + ul > li",
       ),
