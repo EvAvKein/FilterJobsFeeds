@@ -38,8 +38,17 @@
   /** The document being filtered. This is not always window.document, as LinkedIn puts the entire jobs page in an iframe when SPA-navigating to it from another page */
   let filteringDoc = window.document;
 
-  /** Whether the page is being processed. This boolean ensures that regardless of the amount of page mutations (MutationObserver) that result in a filterable page, only a single instance of the filtering logic will execute */
-  let pageEngaged = false;
+  /** Whether we're currently polling for a filterable page. Tells excess polls created by MutationObserver converge */
+  let polling = false;
+
+  /** The timestamp until which to keep polling for a filterable page. Pushed forward by every subsequent page mutation, making the duration based on the last mutation */
+  let pollUntil = 0;
+
+  /** How long to poll after the latest page mutation */
+  const pollDurationMs = 5000;
+
+  /** How long to wait between polls for a filterable page */
+  const pollIntervalMs = pollDurationMs / 10;
 
   let totalFiltered = 0;
 
@@ -238,26 +247,49 @@
   }
 
   /**
-   * Sets up a `MutationObserver` to watch for the page's list element (in case of slow loading or SPA navigation), and initializes the extension functionality once it's found
+   * Polls for a filterable page until the `pollUntil` timestamp.
+   * Doesn't run concurrently with itself, as it simply extends the `pollUntil` timestamp for the current-running poll.
+   *
+   * This function starts the filtering when a page is found, or tears it down when a filterable page is gone.
+   *
+   * Polling is necessary despite the page-wide `MutationObserver` because mutations inside a nested document don't reach it.
+   * This polling is how we notice a list appearing inside an iframe (which has happened before, on LinkedIn)
    * @param {SiteData} siteData
    */
-  async function observeForFilterablePage(siteData) {
-    new MutationObserver(async () => {
-      for (let i = 0; i < 10; i++) {
-        const filterablePageData = queryForPageData(siteData);
-        if (filterablePageData) {
-          if (pageEngaged) return;
-          pageEngaged = true;
+  async function pollForFilterablePage(siteData) {
+    pollUntil = Date.now() + pollDurationMs;
+    if (polling) return;
+
+    polling = true;
+
+    while (Date.now() < pollUntil) {
+      const filterablePageData = queryForPageData(siteData);
+
+      if (filterablePageData) {
+        if (!window.document.contains(elems.details)) {
           initVisibleFunctionality(filterablePageData);
-          return;
-        } else if (window.document.contains(elems.details)) {
-          elems.details.parentElement?.removeChild(elems.details);
-          filteringDoc = window.document;
-          pageEngaged = false;
         }
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        break;
       }
-    }).observe(window.document, { childList: true, subtree: true });
+
+      if (window.document.contains(elems.details)) {
+        elems.details.parentElement?.removeChild(elems.details);
+        filteringDoc = window.document;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+    }
+
+    polling = false;
+  }
+
+  /**
+   * Sets up a `MutationObserver` to watch for the page's list element (in case of slow loading or SPA navigation). The callback function handles extension initialization and teardown
+   * @param {SiteData} siteData
+   */
+  function observeForFilterablePage(siteData) {
+    new MutationObserver(() => pollForFilterablePage(siteData))
+      .observe(window.document, { childList: true, subtree: true });
   }
 
   /**
